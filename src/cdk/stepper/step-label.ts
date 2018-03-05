@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, TemplateRef} from '@angular/core';
+import { Directive, TemplateRef } from '@angular/core';
 
 @Directive({
-  selector: '[cdkStepLabel]',
+	selector: '[cdkStepLabel]'
 })
 export class CdkStepLabel {
-  constructor(/** @docs-private */ public template: TemplateRef<any>) { }
+	constructor(/** @docs-private */ public template: TemplateRef<any>) {}
 }

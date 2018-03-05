@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CdkTrapFocus} from './focus-trap/focus-trap';
-
+import { CdkTrapFocus } from './focus-trap/focus-trap';
 
 export * from './aria-describer/aria-describer';
 export * from './key-manager/activedescendant-key-manager';
@@ -23,4 +22,4 @@ export * from './a11y-module';
  * @deprecated Renamed to CdkTrapFocus.
  * @deletion-target 6.0.0
  */
-export {CdkTrapFocus as FocusTrapDirective};
+export { CdkTrapFocus as FocusTrapDirective };

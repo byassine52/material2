@@ -6,20 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-
+import { Component } from '@angular/core';
 
 @Component({
-  moduleId: module.id,
-  selector: 'slide-toggle-demo',
-  templateUrl: 'slide-toggle-demo.html',
-  styleUrls: ['slide-toggle-demo.css'],
+	moduleId: module.id,
+	selector: 'slide-toggle-demo',
+	templateUrl: 'slide-toggle-demo.html',
+	styleUrls: ['slide-toggle-demo.css']
 })
 export class SlideToggleDemo {
-  firstToggle: boolean;
+	firstToggle: boolean;
 
-  onFormSubmit() {
-    alert(`You submitted the form.`);
-  }
-
+	onFormSubmit() {
+		alert(`You submitted the form.`);
+	}
 }

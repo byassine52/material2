@@ -1,5 +1,5 @@
 import * as firebaseFunctions from 'firebase-functions';
-import {setGithubStatus} from './util/github';
+import { setGithubStatus } from './util/github';
 
 /** Github status update token */
 const token = firebaseFunctions.config().secret.github;
@@ -14,17 +14,22 @@ const authDomain = firebaseFunctions.config().firebase.authDomain;
 const toolName = firebaseFunctions.config().tool.name;
 
 export function updateGithubStatus(event: firebaseFunctions.Event<any>) {
-  if (!event.data.exists() || typeof event.data.val() != 'boolean' && event.params) {
-    return;
-  }
+	if (!event.data.exists() || (typeof event.data.val() != 'boolean' && event.params)) {
+		return;
+	}
 
-  const result = event.data.val() == true;
-  const {prNumber, sha} = event.params!;
+	const result = event.data.val() == true;
+	const { prNumber, sha } = event.params!;
 
-  return setGithubStatus(sha, {
-      result: result,
-      name: toolName,
-      description: `${toolName} ${result ? 'passed' : 'failed'}`,
-      url: `http://${authDomain}/${prNumber}`
-  }, repoSlug, token);
+	return setGithubStatus(
+		sha,
+		{
+			result: result,
+			name: toolName,
+			description: `${toolName} ${result ? 'passed' : 'failed'}`,
+			url: `http://${authDomain}/${prNumber}`
+		},
+		repoSlug,
+		token
+	);
 }

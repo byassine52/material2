@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive} from '@angular/core';
-
+import { Directive } from '@angular/core';
 
 /** Suffix to be placed at the end of the form field. */
 @Directive({
-  selector: '[matSuffix]',
+	selector: '[matSuffix]'
 })
 export class MatSuffix {}

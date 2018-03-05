@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-
+import { Component } from '@angular/core';
 
 @Component({
-  moduleId: module.id,
-  selector: 'baseline-demo',
-  templateUrl: 'baseline-demo.html',
-  styleUrls: ['baseline-demo.css'],
+	moduleId: module.id,
+	selector: 'baseline-demo',
+	templateUrl: 'baseline-demo.html',
+	styleUrls: ['baseline-demo.css']
 })
 export class BaselineDemo {
-  name: string;
+	name: string;
 }

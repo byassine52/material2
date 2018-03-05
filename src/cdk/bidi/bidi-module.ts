@@ -6,18 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-import {DOCUMENT} from '@angular/common';
-import {Dir} from './dir';
-import {DIR_DOCUMENT, Directionality} from './directionality';
-
+import { NgModule } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Dir } from './dir';
+import { DIR_DOCUMENT, Directionality } from './directionality';
 
 @NgModule({
-  exports: [Dir],
-  declarations: [Dir],
-  providers: [
-    {provide: DIR_DOCUMENT, useExisting: DOCUMENT},
-    Directionality,
-  ]
+	exports: [Dir],
+	declarations: [Dir],
+	providers: [{ provide: DIR_DOCUMENT, useExisting: DOCUMENT }, Directionality]
 })
-export class BidiModule { }
+export class BidiModule {}

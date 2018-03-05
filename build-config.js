@@ -2,7 +2,7 @@
  * Build configuration for the packaging tool. This file will be automatically detected and used
  * to build the different packages inside of Material.
  */
-const {join} = require('path');
+const { join } = require('path');
 
 const package = require('./package.json');
 
@@ -25,10 +25,10 @@ const buildLicense = `/**
  */`;
 
 module.exports = {
-  projectVersion: buildVersion,
-  angularVersion: angularVersion,
-  projectDir: __dirname,
-  packagesDir: join(__dirname, 'src'),
-  outputDir: join(__dirname, 'dist'),
-  licenseBanner: buildLicense
+	projectVersion: buildVersion,
+	angularVersion: angularVersion,
+	projectDir: __dirname,
+	packagesDir: join(__dirname, 'src'),
+	outputDir: join(__dirname, 'dist'),
+	licenseBanner: buildLicense
 };

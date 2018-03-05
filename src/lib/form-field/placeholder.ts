@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive} from '@angular/core';
-
+import { Directive } from '@angular/core';
 
 /** The placeholder text for an `MatFormField`. */
 @Directive({
-  selector: 'mat-placeholder'
+	selector: 'mat-placeholder'
 })
 export class MatPlaceholder {}

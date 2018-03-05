@@ -5,7 +5,7 @@
  */
 
 const AxeBuilder = require('axe-webdriverjs');
-const {buildMessage} = require('./build-message');
+const { buildMessage } = require('./build-message');
 
 /* List of pages which were already checked by axe-core and shouldn't run again */
 const checkedPages = [];
@@ -14,9 +14,9 @@ const checkedPages = [];
  * Protractor plugin hook which always runs when Angular successfully bootstrapped.
  */
 function onPageStable() {
-  AxeBuilder(browser.driver)
-    .configure(this.config || {})
-    .analyze(results => handleResults(this, results));
+	AxeBuilder(browser.driver)
+		.configure(this.config || {})
+		.analyze(results => handleResults(this, results));
 }
 
 /**
@@ -26,22 +26,16 @@ function onPageStable() {
  * @param {!axe.AxeResults} results
  */
 function handleResults(context, results) {
+	if (checkedPages.indexOf(results.url) === -1) {
+		checkedPages.push(results.url);
 
-  if (checkedPages.indexOf(results.url) === -1) {
+		results.violations.forEach(violation => {
+			let specName = `${violation.help} (${results.url})`;
+			let message = '\n' + buildMessage(violation);
 
-    checkedPages.push(results.url);
-
-    results.violations.forEach(violation => {
-      
-      let specName = `${violation.help} (${results.url})`;
-      let message = '\n' + buildMessage(violation);
-
-      context.addFailure(message, {specName});
-
-    });
-
-  }
-
+			context.addFailure(message, { specName });
+		});
+	}
 }
 
 exports.name = 'protractor-axe';

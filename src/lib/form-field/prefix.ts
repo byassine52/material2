@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive} from '@angular/core';
-
+import { Directive } from '@angular/core';
 
 /** Prefix to be placed the the front of the form field. */
 @Directive({
-  selector: '[matPrefix]',
+	selector: '[matPrefix]'
 })
 export class MatPrefix {}

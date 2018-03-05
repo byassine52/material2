@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {dispatchFakeEvent} from './dispatch-events';
+import { dispatchFakeEvent } from './dispatch-events';
 
 /**
  * Focuses an input, sets its value and dispatches
@@ -15,7 +15,7 @@ import {dispatchFakeEvent} from './dispatch-events';
  * @param element Element onto which to set the value.
  */
 export function typeInElement(value: string, element: HTMLInputElement) {
-  element.focus();
-  element.value = value;
-  dispatchFakeEvent(element, 'input');
+	element.focus();
+	element.value = value;
+	dispatchFakeEvent(element, 'input');
 }

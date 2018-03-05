@@ -6,89 +6,88 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, ViewChild, TemplateRef} from '@angular/core';
-import {DOCUMENT} from '@angular/common';
-import {MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import { Component, Inject, ViewChild, TemplateRef } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 const defaultDialogConfig = new MatDialogConfig();
 
 @Component({
-  moduleId: module.id,
-  selector: 'dialog-demo',
-  templateUrl: 'dialog-demo.html',
-  styleUrls: ['dialog-demo.css'],
+	moduleId: module.id,
+	selector: 'dialog-demo',
+	templateUrl: 'dialog-demo.html',
+	styleUrls: ['dialog-demo.css']
 })
 export class DialogDemo {
-  dialogRef: MatDialogRef<JazzDialog> | null;
-  lastAfterClosedResult: string;
-  lastBeforeCloseResult: string;
-  actionsAlignment: string;
-  config = {
-    disableClose: false,
-    panelClass: 'custom-overlay-pane-class',
-    hasBackdrop: true,
-    backdropClass: '',
-    width: '',
-    height: '',
-    minWidth: '',
-    minHeight: '',
-    maxWidth: defaultDialogConfig.maxWidth,
-    maxHeight: '',
-    position: {
-      top: '',
-      bottom: '',
-      left: '',
-      right: ''
-    },
-    data: {
-      message: 'Jazzy jazz jazz'
-    }
-  };
-  numTemplateOpens = 0;
+	dialogRef: MatDialogRef<JazzDialog> | null;
+	lastAfterClosedResult: string;
+	lastBeforeCloseResult: string;
+	actionsAlignment: string;
+	config = {
+		disableClose: false,
+		panelClass: 'custom-overlay-pane-class',
+		hasBackdrop: true,
+		backdropClass: '',
+		width: '',
+		height: '',
+		minWidth: '',
+		minHeight: '',
+		maxWidth: defaultDialogConfig.maxWidth,
+		maxHeight: '',
+		position: {
+			top: '',
+			bottom: '',
+			left: '',
+			right: ''
+		},
+		data: {
+			message: 'Jazzy jazz jazz'
+		}
+	};
+	numTemplateOpens = 0;
 
-  @ViewChild(TemplateRef) template: TemplateRef<any>;
+	@ViewChild(TemplateRef) template: TemplateRef<any>;
 
-  constructor(public dialog: MatDialog, @Inject(DOCUMENT) doc: any) {
-    // Possible useful example for the open and closeAll events.
-    // Adding a class to the body if a dialog opens and
-    // removing it after all open dialogs are closed
-    dialog.afterOpen.subscribe(() => {
-      if (!doc.body.classList.contains('no-scroll')) {
-        doc.body.classList.add('no-scroll');
-      }
-    });
-    dialog.afterAllClosed.subscribe(() => {
-      doc.body.classList.remove('no-scroll');
-    });
-  }
+	constructor(public dialog: MatDialog, @Inject(DOCUMENT) doc: any) {
+		// Possible useful example for the open and closeAll events.
+		// Adding a class to the body if a dialog opens and
+		// removing it after all open dialogs are closed
+		dialog.afterOpen.subscribe(() => {
+			if (!doc.body.classList.contains('no-scroll')) {
+				doc.body.classList.add('no-scroll');
+			}
+		});
+		dialog.afterAllClosed.subscribe(() => {
+			doc.body.classList.remove('no-scroll');
+		});
+	}
 
-  openJazz() {
-    this.dialogRef = this.dialog.open(JazzDialog, this.config);
+	openJazz() {
+		this.dialogRef = this.dialog.open(JazzDialog, this.config);
 
-    this.dialogRef.beforeClose().subscribe((result: string) => {
-      this.lastBeforeCloseResult = result;
-    });
-    this.dialogRef.afterClosed().subscribe((result: string) => {
-      this.lastAfterClosedResult = result;
-      this.dialogRef = null;
-    });
-  }
+		this.dialogRef.beforeClose().subscribe((result: string) => {
+			this.lastBeforeCloseResult = result;
+		});
+		this.dialogRef.afterClosed().subscribe((result: string) => {
+			this.lastAfterClosedResult = result;
+			this.dialogRef = null;
+		});
+	}
 
-  openContentElement() {
-    let dialogRef = this.dialog.open(ContentElementDialog, this.config);
-    dialogRef.componentInstance.actionsAlignment = this.actionsAlignment;
-  }
+	openContentElement() {
+		let dialogRef = this.dialog.open(ContentElementDialog, this.config);
+		dialogRef.componentInstance.actionsAlignment = this.actionsAlignment;
+	}
 
-  openTemplate() {
-    this.numTemplateOpens++;
-    this.dialog.open(this.template, this.config);
-  }
+	openTemplate() {
+		this.numTemplateOpens++;
+		this.dialog.open(this.template, this.config);
+	}
 }
 
-
 @Component({
-  selector: 'demo-jazz-dialog',
-  template: `
+	selector: 'demo-jazz-dialog',
+	template: `
   <p>It's Jazz!</p>
 
   <mat-form-field>
@@ -100,36 +99,29 @@ export class DialogDemo {
   <button (click)="togglePosition()">Change dimensions</button>`
 })
 export class JazzDialog {
-  private _dimesionToggle = false;
+	private _dimesionToggle = false;
 
-  constructor(
-    public dialogRef: MatDialogRef<JazzDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
+	constructor(public dialogRef: MatDialogRef<JazzDialog>, @Inject(MAT_DIALOG_DATA) public data: any) {}
 
-  togglePosition(): void {
-    this._dimesionToggle = !this._dimesionToggle;
+	togglePosition(): void {
+		this._dimesionToggle = !this._dimesionToggle;
 
-    if (this._dimesionToggle) {
-      this.dialogRef
-        .updateSize('500px', '500px')
-        .updatePosition({ top: '25px', left: '25px' });
-    } else {
-      this.dialogRef
-        .updateSize()
-        .updatePosition();
-    }
-  }
+		if (this._dimesionToggle) {
+			this.dialogRef.updateSize('500px', '500px').updatePosition({ top: '25px', left: '25px' });
+		} else {
+			this.dialogRef.updateSize().updatePosition();
+		}
+	}
 }
 
-
 @Component({
-  selector: 'demo-content-element-dialog',
-  styles: [
-    `img {
+	selector: 'demo-content-element-dialog',
+	styles: [
+		`img {
       max-width: 100%;
     }`
-  ],
-  template: `
+	],
+	template: `
     <h2 mat-dialog-title>Neptune</h2>
 
     <mat-dialog-content>
@@ -167,23 +159,23 @@ export class JazzDialog {
   `
 })
 export class ContentElementDialog {
-  actionsAlignment: string;
+	actionsAlignment: string;
 
-  constructor(public dialog: MatDialog) { }
+	constructor(public dialog: MatDialog) {}
 
-  showInStackedDialog() {
-    this.dialog.open(IFrameDialog);
-  }
+	showInStackedDialog() {
+		this.dialog.open(IFrameDialog);
+	}
 }
 
 @Component({
-  selector: 'demo-iframe-dialog',
-  styles: [
-    `iframe {
+	selector: 'demo-iframe-dialog',
+	styles: [
+		`iframe {
       width: 800px;
     }`
-  ],
-  template: `
+	],
+	template: `
     <h2 mat-dialog-title>Neptune</h2>
 
     <mat-dialog-content>
@@ -198,5 +190,4 @@ export class ContentElementDialog {
     </mat-dialog-actions>
   `
 })
-export class IFrameDialog {
-}
+export class IFrameDialog {}

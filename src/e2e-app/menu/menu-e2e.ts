@@ -1,11 +1,11 @@
-import {Component} from '@angular/core';
-
+import { Component } from '@angular/core';
 
 @Component({
-  moduleId: module.id,
-  selector: 'menu-e2e',
-  templateUrl: 'menu-e2e.html',
-  styles: [`
+	moduleId: module.id,
+	selector: 'menu-e2e',
+	templateUrl: 'menu-e2e.html',
+	styles: [
+		`
     #before-t, #above-t, #combined-t {
       width: 60px;
       height: 20px;
@@ -14,8 +14,9 @@ import {Component} from '@angular/core';
     .bottom-row {
       margin-top: 5px;
     }
-  `]
+  `
+	]
 })
 export class MenuE2E {
-  selected: string = '';
+	selected: string = '';
 }

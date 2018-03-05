@@ -6,34 +6,36 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-import {MatLineModule, MatCommonModule} from '@angular/material/core';
+import { NgModule } from '@angular/core';
+import { MatLineModule, MatCommonModule } from '@angular/material/core';
 import {
-  MatGridTile, MatGridTileText, MatGridTileFooterCssMatStyler,
-  MatGridTileHeaderCssMatStyler, MatGridAvatarCssMatStyler
+	MatGridTile,
+	MatGridTileText,
+	MatGridTileFooterCssMatStyler,
+	MatGridTileHeaderCssMatStyler,
+	MatGridAvatarCssMatStyler
 } from './grid-tile';
-import {MatGridList} from './grid-list';
-
+import { MatGridList } from './grid-list';
 
 @NgModule({
-  imports: [MatLineModule, MatCommonModule],
-  exports: [
-    MatGridList,
-    MatGridTile,
-    MatGridTileText,
-    MatLineModule,
-    MatCommonModule,
-    MatGridTileHeaderCssMatStyler,
-    MatGridTileFooterCssMatStyler,
-    MatGridAvatarCssMatStyler
-  ],
-  declarations: [
-    MatGridList,
-    MatGridTile,
-    MatGridTileText,
-    MatGridTileHeaderCssMatStyler,
-    MatGridTileFooterCssMatStyler,
-    MatGridAvatarCssMatStyler
-  ],
+	imports: [MatLineModule, MatCommonModule],
+	exports: [
+		MatGridList,
+		MatGridTile,
+		MatGridTileText,
+		MatLineModule,
+		MatCommonModule,
+		MatGridTileHeaderCssMatStyler,
+		MatGridTileFooterCssMatStyler,
+		MatGridAvatarCssMatStyler
+	],
+	declarations: [
+		MatGridList,
+		MatGridTile,
+		MatGridTileText,
+		MatGridTileHeaderCssMatStyler,
+		MatGridTileFooterCssMatStyler,
+		MatGridAvatarCssMatStyler
+	]
 })
 export class MatGridListModule {}

@@ -2,21 +2,18 @@
 // This config is used to compile the tests for Karma. Since the code will run inside of the
 // browser, the target needs to be ES5. The format needs to be CommonJS for Karma.
 {
-  "extends": "./tsconfig-build",
-  "compilerOptions": {
-    "importHelpers": false,
-    "module": "commonjs",
-    "target": "es5",
-    "types": ["jasmine"]
-  },
-  "angularCompilerOptions": {
-    "strictMetadataEmit": true,
-    "skipTemplateCodegen": true,
-    "emitDecoratorMetadata": true,
-    "fullTemplateTypeCheck": true
-  },
-  "include": [
-    "**/*.spec.ts",
-    "index.ts"
-  ]
+	"extends": "./tsconfig-build",
+	"compilerOptions": {
+		"importHelpers": false,
+		"module": "commonjs",
+		"target": "es5",
+		"types": ["jasmine"]
+	},
+	"angularCompilerOptions": {
+		"strictMetadataEmit": true,
+		"skipTemplateCodegen": true,
+		"emitDecoratorMetadata": true,
+		"fullTemplateTypeCheck": true
+	},
+	"include": ["**/*.spec.ts", "index.ts"]
 }

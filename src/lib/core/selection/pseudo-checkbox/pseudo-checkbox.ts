@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation, Input, ChangeDetectionStrategy} from '@angular/core';
+import { Component, ViewEncapsulation, Input, ChangeDetectionStrategy } from '@angular/core';
 
 export type MatPseudoCheckboxState = 'unchecked' | 'checked' | 'indeterminate';
 
@@ -24,24 +24,24 @@ export type MatPseudoCheckboxState = 'unchecked' | 'checked' | 'indeterminate';
  * @docs-private
  */
 @Component({
-  moduleId: module.id,
-  encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'mat-pseudo-checkbox',
-  styleUrls: ['pseudo-checkbox.css'],
-  template: '',
-  host: {
-    'class': 'mat-pseudo-checkbox',
-    '[class.mat-pseudo-checkbox-indeterminate]': 'state === "indeterminate"',
-    '[class.mat-pseudo-checkbox-checked]': 'state === "checked"',
-    '[class.mat-pseudo-checkbox-disabled]': 'disabled',
-  },
+	moduleId: module.id,
+	encapsulation: ViewEncapsulation.None,
+	preserveWhitespaces: false,
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	selector: 'mat-pseudo-checkbox',
+	styleUrls: ['pseudo-checkbox.css'],
+	template: '',
+	host: {
+		class: 'mat-pseudo-checkbox',
+		'[class.mat-pseudo-checkbox-indeterminate]': 'state === "indeterminate"',
+		'[class.mat-pseudo-checkbox-checked]': 'state === "checked"',
+		'[class.mat-pseudo-checkbox-disabled]': 'disabled'
+	}
 })
 export class MatPseudoCheckbox {
-  /** Display state of the checkbox. */
-  @Input() state: MatPseudoCheckboxState = 'unchecked';
+	/** Display state of the checkbox. */
+	@Input() state: MatPseudoCheckboxState = 'unchecked';
 
-  /** Whether the checkbox is disabled. */
-  @Input() disabled: boolean = false;
+	/** Whether the checkbox is disabled. */
+	@Input() disabled: boolean = false;
 }

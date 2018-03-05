@@ -12,7 +12,7 @@
  * @docs-private
  */
 export function getMatSelectDynamicMultipleError(): Error {
-  return Error('Cannot change `multiple` mode of select after initialization.');
+	return Error('Cannot change `multiple` mode of select after initialization.');
 }
 
 /**
@@ -22,7 +22,7 @@ export function getMatSelectDynamicMultipleError(): Error {
  * @docs-private
  */
 export function getMatSelectNonArrayValueError(): Error {
-  return Error('Value must be an array in multiple-selection mode.');
+	return Error('Value must be an array in multiple-selection mode.');
 }
 
 /**
@@ -31,5 +31,5 @@ export function getMatSelectNonArrayValueError(): Error {
  * actually takes two values and returns a boolean is not checked.
  */
 export function getMatSelectNonFunctionValueError(): Error {
-  return Error('`compareWith` must be a function.');
+	return Error('`compareWith` must be a function.');
 }

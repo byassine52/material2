@@ -3,11 +3,11 @@
 import * as firebaseFunctions from 'firebase-functions';
 import * as firebaseAdmin from 'firebase-admin';
 
-import {verifyJwtAndTransferResultToTrustedLocation} from './verify-and-copy-report';
-import {copyGoldImagesToDatabase} from './image-data';
-import {writeTestImagesToFiles} from './data-image';
-import {copyTestImagesToGoldens} from './test-goldens';
-import {updateGithubStatus} from './github';
+import { verifyJwtAndTransferResultToTrustedLocation } from './verify-and-copy-report';
+import { copyGoldImagesToDatabase } from './image-data';
+import { writeTestImagesToFiles } from './data-image';
+import { copyTestImagesToGoldens } from './test-goldens';
+import { updateGithubStatus } from './github';
 
 /**
  * Usage: Firebase functions only accept javascript file index.js
@@ -58,7 +58,6 @@ const jwtFormat = '{jwtHeader}/{jwtPayload}/{jwtSignature}';
 /** The temporary folder name for screenshot data that needs to be validated via JWT. */
 const tempFolder = '/untrustedInbox';
 
-
 /** Untrusted report data for a PR */
 const reportPath = `${tempFolder}/screenshot/reports/{prNumber}/${jwtFormat}/`;
 /** Untrusted image data for a PR */
@@ -73,12 +72,11 @@ const trustedReportPath = `screenshot/reports/{prNumber}`;
  *     sha (github PR info), result (true or false for all the tests), travis job number
  */
 const testDataPath = `${reportPath}/{dataType}`;
-export let testData = firebaseFunctions.database.ref(testDataPath)
-    .onWrite((event: any) => {
-  const dataType = event.params.dataType;
-  if (dataTypes.includes(dataType)) {
-    return verifyJwtAndTransferResultToTrustedLocation(event, dataType);
-  }
+export let testData = firebaseFunctions.database.ref(testDataPath).onWrite((event: any) => {
+	const dataType = event.params.dataType;
+	if (dataTypes.includes(dataType)) {
+		return verifyJwtAndTransferResultToTrustedLocation(event, dataType);
+	}
 });
 
 /**
@@ -87,9 +85,8 @@ export let testData = firebaseFunctions.database.ref(testDataPath)
  * Data copied: test result for each file/test with ${filename}. The value should be true or false.
  */
 const testResultsPath = `${reportPath}/results/{filename}`;
-export let testResults = firebaseFunctions.database.ref(testResultsPath)
-    .onWrite((event: any) => {
-  return verifyJwtAndTransferResultToTrustedLocation(event, `results/${event.params.filename}`);
+export let testResults = firebaseFunctions.database.ref(testResultsPath).onWrite((event: any) => {
+	return verifyJwtAndTransferResultToTrustedLocation(event, `results/${event.params.filename}`);
 });
 
 /**
@@ -98,26 +95,26 @@ export let testResults = firebaseFunctions.database.ref(testResultsPath)
  * Data copied: test result images. Convert from data to image files in storage.
  */
 const imageDataToFilePath = `${imagePath}/{dataType}/{filename}`;
-export let imageDataToFile = firebaseFunctions.database.ref(imageDataToFilePath)
-  .onWrite(writeTestImagesToFiles);
+export let imageDataToFile = firebaseFunctions.database.ref(imageDataToFilePath).onWrite(writeTestImagesToFiles);
 
 /**
  * Copy valid goldens from storage /goldens/ to database /screenshot/goldens/
  * so we can read the goldens without credentials.
  */
-export let goldenImageToData = firebaseFunctions.storage.bucket(
-    firebaseFunctions.config().firebase.storageBucket).object().onChange((event: any) => {
-  return copyGoldImagesToDatabase(event.data.name, event.data.resourceState, event.data.bucket);
-});
+export let goldenImageToData = firebaseFunctions.storage
+	.bucket(firebaseFunctions.config().firebase.storageBucket)
+	.object()
+	.onChange((event: any) => {
+		return copyGoldImagesToDatabase(event.data.name, event.data.resourceState, event.data.bucket);
+	});
 
 /**
  * Copy test result images for PR to Goldens.
  * Copy images from /screenshot/$prNumber/test/ to /goldens/
  */
 const approveImagesPath = `${trustedReportPath}/approved`;
-export let approveImages = firebaseFunctions.database.ref(approveImagesPath)
-    .onWrite((event: any) => {
-  return copyTestImagesToGoldens(event.params.prNumber);
+export let approveImages = firebaseFunctions.database.ref(approveImagesPath).onWrite((event: any) => {
+	return copyTestImagesToGoldens(event.params.prNumber);
 });
 
 /**
@@ -126,5 +123,4 @@ export let approveImages = firebaseFunctions.database.ref(approveImagesPath)
  * The Github Status Token is set in config.secret.github
  */
 const githubStatusPath = `${trustedReportPath}/result/{sha}`;
-export let githubStatus = firebaseFunctions.database.ref(githubStatusPath)
-    .onWrite(updateGithubStatus);
+export let githubStatus = firebaseFunctions.database.ref(githubStatusPath).onWrite(updateGithubStatus);

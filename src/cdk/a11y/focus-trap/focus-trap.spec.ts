@@ -1,184 +1,186 @@
-import {Platform} from '@angular/cdk/platform';
-import {Component, ViewChild} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {A11yModule, FocusTrap, CdkTrapFocus} from '../index';
-
+import { Platform } from '@angular/cdk/platform';
+import { Component, ViewChild } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { A11yModule, FocusTrap, CdkTrapFocus } from '../index';
 
 describe('FocusTrap', () => {
+	beforeEach(
+		async(() => {
+			TestBed.configureTestingModule({
+				imports: [A11yModule],
+				declarations: [
+					FocusTrapWithBindings,
+					SimpleFocusTrap,
+					FocusTrapTargets,
+					FocusTrapWithSvg,
+					FocusTrapWithoutFocusableElements,
+					FocusTrapWithAutoCapture
+				]
+			});
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [A11yModule],
-      declarations: [
-        FocusTrapWithBindings,
-        SimpleFocusTrap,
-        FocusTrapTargets,
-        FocusTrapWithSvg,
-        FocusTrapWithoutFocusableElements,
-        FocusTrapWithAutoCapture,
-      ],
-    });
+			TestBed.compileComponents();
+		})
+	);
 
-    TestBed.compileComponents();
-  }));
+	describe('with default element', () => {
+		let fixture: ComponentFixture<SimpleFocusTrap>;
+		let focusTrapInstance: FocusTrap;
 
-  describe('with default element', () => {
-    let fixture: ComponentFixture<SimpleFocusTrap>;
-    let focusTrapInstance: FocusTrap;
+		beforeEach(() => {
+			fixture = TestBed.createComponent(SimpleFocusTrap);
+			fixture.detectChanges();
+			focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
+		});
 
-    beforeEach(() => {
-      fixture = TestBed.createComponent(SimpleFocusTrap);
-      fixture.detectChanges();
-      focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
-    });
+		it('wrap focus from end to start', () => {
+			// Because we can't mimic a real tab press focus change in a unit test, just call the
+			// focus event handler directly.
+			const result = focusTrapInstance.focusFirstTabbableElement();
 
-    it('wrap focus from end to start', () => {
-      // Because we can't mimic a real tab press focus change in a unit test, just call the
-      // focus event handler directly.
-      const result = focusTrapInstance.focusFirstTabbableElement();
+			expect(document.activeElement.nodeName.toLowerCase()).toBe('input', 'Expected input element to be focused');
+			expect(result).toBe(true, 'Expected return value to be true if focus was shifted.');
+		});
 
-      expect(document.activeElement.nodeName.toLowerCase())
-          .toBe('input', 'Expected input element to be focused');
-      expect(result).toBe(true, 'Expected return value to be true if focus was shifted.');
-    });
+		it('should wrap focus from start to end', () => {
+			// Because we can't mimic a real tab press focus change in a unit test, just call the
+			// focus event handler directly.
+			const result = focusTrapInstance.focusLastTabbableElement();
 
-    it('should wrap focus from start to end', () => {
-      // Because we can't mimic a real tab press focus change in a unit test, just call the
-      // focus event handler directly.
-      const result = focusTrapInstance.focusLastTabbableElement();
+			// In iOS button elements are never tabbable, so the last element will be the input.
+			const lastElement = new Platform().IOS ? 'input' : 'button';
 
-      // In iOS button elements are never tabbable, so the last element will be the input.
-      const lastElement = new Platform().IOS ? 'input' : 'button';
+			expect(document.activeElement.nodeName.toLowerCase()).toBe(
+				lastElement,
+				`Expected ${lastElement} element to be focused`
+			);
 
-      expect(document.activeElement.nodeName.toLowerCase())
-          .toBe(lastElement, `Expected ${lastElement} element to be focused`);
+			expect(result).toBe(true, 'Expected return value to be true if focus was shifted.');
+		});
 
-      expect(result).toBe(true, 'Expected return value to be true if focus was shifted.');
-    });
+		it('should return false if it did not manage to find a focusable element', () => {
+			fixture.destroy();
 
-    it('should return false if it did not manage to find a focusable element', () => {
-      fixture.destroy();
+			const newFixture = TestBed.createComponent(FocusTrapWithoutFocusableElements);
+			newFixture.detectChanges();
 
-      const newFixture = TestBed.createComponent(FocusTrapWithoutFocusableElements);
-      newFixture.detectChanges();
+			const focusTrap = newFixture.componentInstance.focusTrapDirective.focusTrap;
+			const result = focusTrap.focusFirstTabbableElement();
 
-      const focusTrap = newFixture.componentInstance.focusTrapDirective.focusTrap;
-      const result = focusTrap.focusFirstTabbableElement();
+			expect(result).toBe(false);
+		});
 
-      expect(result).toBe(false);
-    });
+		it('should be enabled by default', () => {
+			expect(focusTrapInstance.enabled).toBe(true);
+		});
+	});
 
-    it('should be enabled by default', () => {
-      expect(focusTrapInstance.enabled).toBe(true);
-    });
+	describe('with bindings', () => {
+		let fixture: ComponentFixture<FocusTrapWithBindings>;
+		let focusTrapInstance: FocusTrap;
 
-  });
+		beforeEach(() => {
+			fixture = TestBed.createComponent(FocusTrapWithBindings);
+			fixture.detectChanges();
+			focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
+		});
 
-  describe('with bindings', () => {
-    let fixture: ComponentFixture<FocusTrapWithBindings>;
-    let focusTrapInstance: FocusTrap;
+		it('should clean up its anchor sibling elements on destroy', () => {
+			const rootElement = fixture.debugElement.nativeElement as HTMLElement;
 
-    beforeEach(() => {
-      fixture = TestBed.createComponent(FocusTrapWithBindings);
-      fixture.detectChanges();
-      focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
-    });
+			expect(rootElement.querySelectorAll('div.cdk-visually-hidden').length).toBe(2);
 
-    it('should clean up its anchor sibling elements on destroy', () => {
-      const rootElement = fixture.debugElement.nativeElement as HTMLElement;
+			fixture.componentInstance.renderFocusTrap = false;
+			fixture.detectChanges();
 
-      expect(rootElement.querySelectorAll('div.cdk-visually-hidden').length).toBe(2);
+			expect(rootElement.querySelectorAll('div.cdk-visually-hidden').length).toBe(0);
+		});
 
-      fixture.componentInstance.renderFocusTrap = false;
-      fixture.detectChanges();
+		it('should set the appropriate tabindex on the anchors, based on the disabled state', () => {
+			const anchors = Array.from(
+				fixture.debugElement.nativeElement.querySelectorAll('div.cdk-visually-hidden')
+			) as HTMLElement[];
 
-      expect(rootElement.querySelectorAll('div.cdk-visually-hidden').length).toBe(0);
-    });
+			expect(anchors.every(current => current.getAttribute('tabindex') === '0')).toBe(true);
 
-    it('should set the appropriate tabindex on the anchors, based on the disabled state', () => {
-      const anchors = Array.from(
-        fixture.debugElement.nativeElement.querySelectorAll('div.cdk-visually-hidden')
-      ) as HTMLElement[];
+			fixture.componentInstance._isFocusTrapEnabled = false;
+			fixture.detectChanges();
 
-      expect(anchors.every(current => current.getAttribute('tabindex') === '0')).toBe(true);
+			expect(anchors.every(current => current.getAttribute('tabindex') === '-1')).toBe(true);
+		});
+	});
 
-      fixture.componentInstance._isFocusTrapEnabled = false;
-      fixture.detectChanges();
+	describe('with focus targets', () => {
+		let fixture: ComponentFixture<FocusTrapTargets>;
+		let focusTrapInstance: FocusTrap;
 
-      expect(anchors.every(current => current.getAttribute('tabindex') === '-1')).toBe(true);
-    });
-  });
+		beforeEach(() => {
+			fixture = TestBed.createComponent(FocusTrapTargets);
+			fixture.detectChanges();
+			focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
+		});
 
-  describe('with focus targets', () => {
-    let fixture: ComponentFixture<FocusTrapTargets>;
-    let focusTrapInstance: FocusTrap;
+		it('should be able to set initial focus target', () => {
+			// Because we can't mimic a real tab press focus change in a unit test, just call the
+			// focus event handler directly.
+			focusTrapInstance.focusInitialElement();
+			expect(document.activeElement.id).toBe('middle');
+		});
 
-    beforeEach(() => {
-      fixture = TestBed.createComponent(FocusTrapTargets);
-      fixture.detectChanges();
-      focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
-    });
+		it('should be able to prioritize the first focus target', () => {
+			// Because we can't mimic a real tab press focus change in a unit test, just call the
+			// focus event handler directly.
+			focusTrapInstance.focusFirstTabbableElement();
+			expect(document.activeElement.id).toBe('first');
+		});
 
-    it('should be able to set initial focus target', () => {
-      // Because we can't mimic a real tab press focus change in a unit test, just call the
-      // focus event handler directly.
-      focusTrapInstance.focusInitialElement();
-      expect(document.activeElement.id).toBe('middle');
-    });
+		it('should be able to prioritize the last focus target', () => {
+			// Because we can't mimic a real tab press focus change in a unit test, just call the
+			// focus event handler directly.
+			focusTrapInstance.focusLastTabbableElement();
+			expect(document.activeElement.id).toBe('last');
+		});
+	});
 
-    it('should be able to prioritize the first focus target', () => {
-      // Because we can't mimic a real tab press focus change in a unit test, just call the
-      // focus event handler directly.
-      focusTrapInstance.focusFirstTabbableElement();
-      expect(document.activeElement.id).toBe('first');
-    });
+	describe('special cases', () => {
+		it('should not throw when it has a SVG child', () => {
+			let fixture = TestBed.createComponent(FocusTrapWithSvg);
 
-    it('should be able to prioritize the last focus target', () => {
-      // Because we can't mimic a real tab press focus change in a unit test, just call the
-      // focus event handler directly.
-      focusTrapInstance.focusLastTabbableElement();
-      expect(document.activeElement.id).toBe('last');
-    });
-  });
+			fixture.detectChanges();
 
-  describe('special cases', () => {
-    it('should not throw when it has a SVG child', () => {
-      let fixture = TestBed.createComponent(FocusTrapWithSvg);
+			let focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
 
-      fixture.detectChanges();
+			expect(() => focusTrapInstance.focusFirstTabbableElement()).not.toThrow();
+			expect(() => focusTrapInstance.focusLastTabbableElement()).not.toThrow();
+		});
+	});
 
-      let focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
+	describe('with autoCapture', () => {
+		it(
+			'should automatically capture and return focus on init / destroy',
+			async(() => {
+				const fixture = TestBed.createComponent(FocusTrapWithAutoCapture);
+				fixture.detectChanges();
 
-      expect(() => focusTrapInstance.focusFirstTabbableElement()).not.toThrow();
-      expect(() => focusTrapInstance.focusLastTabbableElement()).not.toThrow();
-    });
-  });
+				const buttonOutsideTrappedRegion = fixture.nativeElement.querySelector('button');
+				buttonOutsideTrappedRegion.focus();
+				expect(document.activeElement).toBe(buttonOutsideTrappedRegion);
 
-  describe('with autoCapture', () => {
-    it('should automatically capture and return focus on init / destroy', async(() => {
-      const fixture = TestBed.createComponent(FocusTrapWithAutoCapture);
-      fixture.detectChanges();
+				fixture.componentInstance.showTrappedRegion = true;
+				fixture.detectChanges();
 
-      const buttonOutsideTrappedRegion = fixture.nativeElement.querySelector('button');
-      buttonOutsideTrappedRegion.focus();
-      expect(document.activeElement).toBe(buttonOutsideTrappedRegion);
+				fixture.whenStable().then(() => {
+					expect(document.activeElement.id).toBe('auto-capture-target');
 
-      fixture.componentInstance.showTrappedRegion = true;
-      fixture.detectChanges();
-
-      fixture.whenStable().then(() => {
-        expect(document.activeElement.id).toBe('auto-capture-target');
-
-        fixture.destroy();
-        expect(document.activeElement).toBe(buttonOutsideTrappedRegion);
-      });
-    }));
-  });
+					fixture.destroy();
+					expect(document.activeElement).toBe(buttonOutsideTrappedRegion);
+				});
+			})
+		);
+	});
 });
 
-
 @Component({
-  template: `
+	template: `
     <div cdkTrapFocus>
       <input>
       <button>SAVE</button>
@@ -186,11 +188,11 @@ describe('FocusTrap', () => {
     `
 })
 class SimpleFocusTrap {
-  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
+	@ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
 }
 
 @Component({
-  template: `
+	template: `
     <button type="button">Toggle</button>
     <div *ngIf="showTrappedRegion" cdkTrapFocus cdkTrapFocusAutoCapture>
       <input id="auto-capture-target">
@@ -199,13 +201,12 @@ class SimpleFocusTrap {
     `
 })
 class FocusTrapWithAutoCapture {
-  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
-  showTrappedRegion = false;
+	@ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
+	showTrappedRegion = false;
 }
 
-
 @Component({
-  template: `
+	template: `
     <div *ngIf="renderFocusTrap" [cdkTrapFocus]="_isFocusTrapEnabled">
       <input>
       <button>SAVE</button>
@@ -213,14 +214,13 @@ class FocusTrapWithAutoCapture {
     `
 })
 class FocusTrapWithBindings {
-  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
-  renderFocusTrap = true;
-  _isFocusTrapEnabled = true;
+	@ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
+	renderFocusTrap = true;
+	_isFocusTrapEnabled = true;
 }
 
-
 @Component({
-  template: `
+	template: `
     <div cdkTrapFocus>
       <input>
       <button>before</button>
@@ -233,12 +233,11 @@ class FocusTrapWithBindings {
     `
 })
 class FocusTrapTargets {
-  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
+	@ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
 }
 
-
 @Component({
-  template: `
+	template: `
     <div cdkTrapFocus>
       <svg xmlns="http://www.w3.org/2000/svg">
         <circle cx="100" cy="100" r="100"/>
@@ -247,16 +246,16 @@ class FocusTrapTargets {
     `
 })
 class FocusTrapWithSvg {
-  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
+	@ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
 }
 
 @Component({
-  template: `
+	template: `
     <div cdkTrapFocus>
       <p>Hello</p>
     </div>
     `
 })
 class FocusTrapWithoutFocusableElements {
-  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
+	@ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
 }

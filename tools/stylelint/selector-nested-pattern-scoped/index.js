@@ -5,7 +5,7 @@ const isStandardSyntaxSelector = require('stylelint/lib/utils/isStandardSyntaxSe
 
 const ruleName = 'material/selector-nested-pattern-scoped';
 const messages = stylelint.utils.ruleMessages(ruleName, {
-  expected: selector => `Expected nested selector '${selector}' to match specified pattern`,
+	expected: selector => `Expected nested selector '${selector}' to match specified pattern`
 });
 
 /**
@@ -17,28 +17,29 @@ const messages = stylelint.utils.ruleMessages(ruleName, {
  * Source: https://github.com/stylelint/stylelint/blob/master/lib/rules/selector-nested-pattern/
  */
 const plugin = stylelint.createPlugin(ruleName, (pattern, options) => {
-  return (root, result) => {
-    const selectorPattern = new RegExp(pattern);
-    const filePattern = new RegExp(options.filePattern);
-    const fileName = path.basename(root.source.input.file);
+	return (root, result) => {
+		const selectorPattern = new RegExp(pattern);
+		const filePattern = new RegExp(options.filePattern);
+		const fileName = path.basename(root.source.input.file);
 
-    if (!filePattern.test(fileName)) return;
+		if (!filePattern.test(fileName)) return;
 
-    root.walkRules(rule => {
-      if (rule.parent.type === 'rule' &&
-          isStandardSyntaxRule(rule) &&
-          isStandardSyntaxSelector(rule.selector) &&
-          !selectorPattern.test(rule.selector)) {
-
-        stylelint.utils.report({
-          result,
-          ruleName,
-          message: messages.expected(rule.selector),
-          node: rule
-        });
-      }
-    });
-  };
+		root.walkRules(rule => {
+			if (
+				rule.parent.type === 'rule' &&
+				isStandardSyntaxRule(rule) &&
+				isStandardSyntaxSelector(rule.selector) &&
+				!selectorPattern.test(rule.selector)
+			) {
+				stylelint.utils.report({
+					result,
+					ruleName,
+					message: messages.expected(rule.selector),
+					node: rule
+				});
+			}
+		});
+	};
 });
 
 plugin.ruleName = ruleName;

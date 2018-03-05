@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  EventEmitter,
-  Injectable,
-  Optional,
-  Inject,
-  InjectionToken,
-} from '@angular/core';
-
+import { EventEmitter, Injectable, Optional, Inject, InjectionToken } from '@angular/core';
 
 export type Direction = 'ltr' | 'rtl';
 
@@ -35,21 +28,25 @@ export const DIR_DOCUMENT = new InjectionToken<Document>('cdk-dir-doc');
  */
 @Injectable()
 export class Directionality {
-  /** The current 'ltr' or 'rtl' value. */
-  readonly value: Direction = 'ltr';
+	/** The current 'ltr' or 'rtl' value. */
+	readonly value: Direction = 'ltr';
 
-  /** Stream that emits whenever the 'ltr' / 'rtl' state changes. */
-  readonly change = new EventEmitter<Direction>();
+	/** Stream that emits whenever the 'ltr' / 'rtl' state changes. */
+	readonly change = new EventEmitter<Direction>();
 
-  constructor(@Optional() @Inject(DIR_DOCUMENT) _document?: any) {
-    if (_document) {
-      // TODO: handle 'auto' value -
-      // We still need to account for dir="auto".
-      // It looks like HTMLElemenet.dir is also "auto" when that's set to the attribute,
-      // but getComputedStyle return either "ltr" or "rtl". avoiding getComputedStyle for now
-      const bodyDir = _document.body ? _document.body.dir : null;
-      const htmlDir = _document.documentElement ? _document.documentElement.dir : null;
-      this.value = (bodyDir || htmlDir || 'ltr') as Direction;
-    }
-  }
+	constructor(
+		@Optional()
+		@Inject(DIR_DOCUMENT)
+		_document?: any
+	) {
+		if (_document) {
+			// TODO: handle 'auto' value -
+			// We still need to account for dir="auto".
+			// It looks like HTMLElemenet.dir is also "auto" when that's set to the attribute,
+			// but getComputedStyle return either "ltr" or "rtl". avoiding getComputedStyle for now
+			const bodyDir = _document.body ? _document.body.dir : null;
+			const htmlDir = _document.documentElement ? _document.documentElement.dir : null;
+			this.value = (bodyDir || htmlDir || 'ltr') as Direction;
+		}
+	}
 }

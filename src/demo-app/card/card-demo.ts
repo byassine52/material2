@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-
+import { Component } from '@angular/core';
 
 @Component({
-  moduleId: module.id,
-  selector: 'card-demo',
-  templateUrl: 'card-demo.html',
-  styleUrls: ['card-demo.css'],
+	moduleId: module.id,
+	selector: 'card-demo',
+	templateUrl: 'card-demo.html',
+	styleUrls: ['card-demo.css']
 })
 export class CardDemo {}

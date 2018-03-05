@@ -6,363 +6,374 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Platform} from '@angular/cdk/platform';
+import { FocusMonitor, FocusOrigin } from '@angular/cdk/a11y';
+import { coerceBooleanProperty } from '@angular/cdk/coercion';
+import { Platform } from '@angular/cdk/platform';
 import {
-  AfterContentInit,
-  Attribute,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  forwardRef,
-  Input,
-  OnDestroy,
-  Output,
-  ViewChild,
-  ViewEncapsulation
+	AfterContentInit,
+	Attribute,
+	ChangeDetectionStrategy,
+	ChangeDetectorRef,
+	Component,
+	ElementRef,
+	EventEmitter,
+	forwardRef,
+	Input,
+	OnDestroy,
+	Output,
+	ViewChild,
+	ViewEncapsulation
 } from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import {
-  CanColor,
-  CanDisable,
-  CanDisableRipple,
-  HammerInput,
-  HasTabIndex,
-  MatRipple,
-  mixinColor,
-  mixinDisabled,
-  mixinDisableRipple,
-  mixinTabIndex,
-  RippleRef,
+	CanColor,
+	CanDisable,
+	CanDisableRipple,
+	HammerInput,
+	HasTabIndex,
+	MatRipple,
+	mixinColor,
+	mixinDisabled,
+	mixinDisableRipple,
+	mixinTabIndex,
+	RippleRef
 } from '@angular/material/core';
 
 // Increasing integer for generating unique ids for slide-toggle components.
 let nextUniqueId = 0;
 
 export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
-  provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => MatSlideToggle),
-  multi: true
+	provide: NG_VALUE_ACCESSOR,
+	useExisting: forwardRef(() => MatSlideToggle),
+	multi: true
 };
 
 /** Change event object emitted by a MatSlideToggle. */
 export class MatSlideToggleChange {
-  constructor(
-    /** The source MatSlideToggle of the event. */
-    public source: MatSlideToggle,
-    /** The new `checked` value of the MatSlideToggle. */
-    public checked: boolean) { }
+	constructor(
+		/** The source MatSlideToggle of the event. */
+		public source: MatSlideToggle,
+		/** The new `checked` value of the MatSlideToggle. */
+		public checked: boolean
+	) {}
 }
 
 // Boilerplate for applying mixins to MatSlideToggle.
 /** @docs-private */
 export class MatSlideToggleBase {
-  constructor(public _elementRef: ElementRef) {}
+	constructor(public _elementRef: ElementRef) {}
 }
-export const _MatSlideToggleMixinBase =
-  mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatSlideToggleBase)), 'accent'));
+export const _MatSlideToggleMixinBase = mixinTabIndex(
+	mixinColor(mixinDisableRipple(mixinDisabled(MatSlideToggleBase)), 'accent')
+);
 
 /** Represents a slidable "switch" toggle that can be moved between on and off. */
 @Component({
-  moduleId: module.id,
-  selector: 'mat-slide-toggle',
-  exportAs: 'matSlideToggle',
-  host: {
-    'class': 'mat-slide-toggle',
-    '[id]': 'id',
-    '[class.mat-checked]': 'checked',
-    '[class.mat-disabled]': 'disabled',
-    '[class.mat-slide-toggle-label-before]': 'labelPosition == "before"',
-  },
-  templateUrl: 'slide-toggle.html',
-  styleUrls: ['slide-toggle.css'],
-  providers: [MAT_SLIDE_TOGGLE_VALUE_ACCESSOR],
-  inputs: ['disabled', 'disableRipple', 'color', 'tabIndex'],
-  encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+	moduleId: module.id,
+	selector: 'mat-slide-toggle',
+	exportAs: 'matSlideToggle',
+	host: {
+		class: 'mat-slide-toggle',
+		'[id]': 'id',
+		'[class.mat-checked]': 'checked',
+		'[class.mat-disabled]': 'disabled',
+		'[class.mat-slide-toggle-label-before]': 'labelPosition == "before"'
+	},
+	templateUrl: 'slide-toggle.html',
+	styleUrls: ['slide-toggle.css'],
+	providers: [MAT_SLIDE_TOGGLE_VALUE_ACCESSOR],
+	inputs: ['disabled', 'disableRipple', 'color', 'tabIndex'],
+	encapsulation: ViewEncapsulation.None,
+	preserveWhitespaces: false,
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestroy, AfterContentInit,
-    ControlValueAccessor, CanDisable, CanColor, HasTabIndex, CanDisableRipple {
+export class MatSlideToggle extends _MatSlideToggleMixinBase
+	implements OnDestroy, AfterContentInit, ControlValueAccessor, CanDisable, CanColor, HasTabIndex, CanDisableRipple {
+	private onChange = (_: any) => {};
+	private onTouched = () => {};
 
-  private onChange = (_: any) => {};
-  private onTouched = () => {};
+	private _uniqueId: string = `mat-slide-toggle-${++nextUniqueId}`;
+	private _slideRenderer: SlideToggleRenderer;
+	private _required: boolean = false;
+	private _checked: boolean = false;
 
-  private _uniqueId: string = `mat-slide-toggle-${++nextUniqueId}`;
-  private _slideRenderer: SlideToggleRenderer;
-  private _required: boolean = false;
-  private _checked: boolean = false;
+	/** Reference to the focus state ripple. */
+	private _focusRipple: RippleRef | null;
 
-  /** Reference to the focus state ripple. */
-  private _focusRipple: RippleRef | null;
+	/** Name value will be applied to the input element if present */
+	@Input() name: string | null = null;
 
-  /** Name value will be applied to the input element if present */
-  @Input() name: string | null = null;
+	/** A unique id for the slide-toggle input. If none is supplied, it will be auto-generated. */
+	@Input() id: string = this._uniqueId;
 
-  /** A unique id for the slide-toggle input. If none is supplied, it will be auto-generated. */
-  @Input() id: string = this._uniqueId;
+	/** Whether the label should appear after or before the slide-toggle. Defaults to 'after' */
+	@Input() labelPosition: 'before' | 'after' = 'after';
 
-  /** Whether the label should appear after or before the slide-toggle. Defaults to 'after' */
-  @Input() labelPosition: 'before' | 'after' = 'after';
+	/** Whether the slide-toggle element is checked or not */
 
-  /** Whether the slide-toggle element is checked or not */
+	/** Used to set the aria-label attribute on the underlying input element. */
+	@Input('aria-label') ariaLabel: string | null = null;
 
-  /** Used to set the aria-label attribute on the underlying input element. */
-  @Input('aria-label') ariaLabel: string | null = null;
+	/** Used to set the aria-labelledby attribute on the underlying input element. */
+	@Input('aria-labelledby') ariaLabelledby: string | null = null;
 
-  /** Used to set the aria-labelledby attribute on the underlying input element. */
-  @Input('aria-labelledby') ariaLabelledby: string | null = null;
+	/** Whether the slide-toggle is required. */
+	@Input()
+	get required(): boolean {
+		return this._required;
+	}
+	set required(value) {
+		this._required = coerceBooleanProperty(value);
+	}
 
-  /** Whether the slide-toggle is required. */
-  @Input()
-  get required(): boolean { return this._required; }
-  set required(value) { this._required = coerceBooleanProperty(value); }
+	/** Whether the slide-toggle element is checked or not */
+	@Input()
+	get checked(): boolean {
+		return this._checked;
+	}
+	set checked(value) {
+		this._checked = coerceBooleanProperty(value);
+		this._changeDetectorRef.markForCheck();
+	}
+	/** An event will be dispatched each time the slide-toggle changes its value. */
+	@Output() readonly change: EventEmitter<MatSlideToggleChange> = new EventEmitter<MatSlideToggleChange>();
 
-  /** Whether the slide-toggle element is checked or not */
-  @Input()
-  get checked(): boolean { return this._checked; }
-  set checked(value) {
-    this._checked = coerceBooleanProperty(value);
-    this._changeDetectorRef.markForCheck();
-  }
-  /** An event will be dispatched each time the slide-toggle changes its value. */
-  @Output() readonly change: EventEmitter<MatSlideToggleChange> =
-      new EventEmitter<MatSlideToggleChange>();
+	/** Returns the unique id for the visual hidden input. */
+	get inputId(): string {
+		return `${this.id || this._uniqueId}-input`;
+	}
 
-  /** Returns the unique id for the visual hidden input. */
-  get inputId(): string { return `${this.id || this._uniqueId}-input`; }
+	/** Reference to the underlying input element. */
+	@ViewChild('input') _inputElement: ElementRef;
 
-  /** Reference to the underlying input element. */
-  @ViewChild('input') _inputElement: ElementRef;
+	/** Reference to the ripple directive on the thumb container. */
+	@ViewChild(MatRipple) _ripple: MatRipple;
 
-  /** Reference to the ripple directive on the thumb container. */
-  @ViewChild(MatRipple) _ripple: MatRipple;
+	constructor(
+		elementRef: ElementRef,
+		private _platform: Platform,
+		private _focusMonitor: FocusMonitor,
+		private _changeDetectorRef: ChangeDetectorRef,
+		@Attribute('tabindex') tabIndex: string
+	) {
+		super(elementRef);
+		this.tabIndex = parseInt(tabIndex) || 0;
+	}
 
-  constructor(elementRef: ElementRef,
-              private _platform: Platform,
-              private _focusMonitor: FocusMonitor,
-              private _changeDetectorRef: ChangeDetectorRef,
-              @Attribute('tabindex') tabIndex: string) {
+	ngAfterContentInit() {
+		this._slideRenderer = new SlideToggleRenderer(this._elementRef, this._platform);
 
-    super(elementRef);
-    this.tabIndex = parseInt(tabIndex) || 0;
-  }
+		this._focusMonitor
+			.monitor(this._inputElement.nativeElement)
+			.subscribe(focusOrigin => this._onInputFocusChange(focusOrigin));
+	}
 
-  ngAfterContentInit() {
-    this._slideRenderer = new SlideToggleRenderer(this._elementRef, this._platform);
+	ngOnDestroy() {
+		this._focusMonitor.stopMonitoring(this._inputElement.nativeElement);
+	}
 
-    this._focusMonitor
-      .monitor(this._inputElement.nativeElement)
-      .subscribe(focusOrigin => this._onInputFocusChange(focusOrigin));
-  }
+	/** Method being called whenever the underlying input emits a change event. */
+	_onChangeEvent(event: Event) {
+		// We always have to stop propagation on the change event.
+		// Otherwise the change event, from the input element, will bubble up and
+		// emit its event object to the component's `change` output.
+		event.stopPropagation();
 
-  ngOnDestroy() {
-    this._focusMonitor.stopMonitoring(this._inputElement.nativeElement);
-  }
+		// Releasing the pointer over the `<label>` element while dragging triggers another
+		// click event on the `<label>` element. This means that the checked state of the underlying
+		// input changed unintentionally and needs to be changed back.
+		if (this._slideRenderer.dragging) {
+			this._inputElement.nativeElement.checked = this.checked;
+			return;
+		}
 
-  /** Method being called whenever the underlying input emits a change event. */
-  _onChangeEvent(event: Event) {
-    // We always have to stop propagation on the change event.
-    // Otherwise the change event, from the input element, will bubble up and
-    // emit its event object to the component's `change` output.
-    event.stopPropagation();
+		// Sync the value from the underlying input element with the component instance.
+		this.checked = this._inputElement.nativeElement.checked;
 
-    // Releasing the pointer over the `<label>` element while dragging triggers another
-    // click event on the `<label>` element. This means that the checked state of the underlying
-    // input changed unintentionally and needs to be changed back.
-    if (this._slideRenderer.dragging) {
-      this._inputElement.nativeElement.checked = this.checked;
-      return;
-    }
+		// Emit our custom change event only if the underlying input emitted one. This ensures that
+		// there is no change event, when the checked state changes programmatically.
+		this._emitChangeEvent();
+	}
 
-    // Sync the value from the underlying input element with the component instance.
-    this.checked = this._inputElement.nativeElement.checked;
+	/** Method being called whenever the slide-toggle has been clicked. */
+	_onInputClick(event: Event) {
+		// We have to stop propagation for click events on the visual hidden input element.
+		// By default, when a user clicks on a label element, a generated click event will be
+		// dispatched on the associated input element. Since we are using a label element as our
+		// root container, the click event on the `slide-toggle` will be executed twice.
+		// The real click event will bubble up, and the generated click event also tries to bubble up.
+		// This will lead to multiple click events.
+		// Preventing bubbling for the second event will solve that issue.
+		event.stopPropagation();
+	}
 
-    // Emit our custom change event only if the underlying input emitted one. This ensures that
-    // there is no change event, when the checked state changes programmatically.
-    this._emitChangeEvent();
-  }
+	/** Implemented as part of ControlValueAccessor. */
+	writeValue(value: any): void {
+		this.checked = !!value;
+	}
 
-  /** Method being called whenever the slide-toggle has been clicked. */
-  _onInputClick(event: Event) {
-    // We have to stop propagation for click events on the visual hidden input element.
-    // By default, when a user clicks on a label element, a generated click event will be
-    // dispatched on the associated input element. Since we are using a label element as our
-    // root container, the click event on the `slide-toggle` will be executed twice.
-    // The real click event will bubble up, and the generated click event also tries to bubble up.
-    // This will lead to multiple click events.
-    // Preventing bubbling for the second event will solve that issue.
-    event.stopPropagation();
-  }
+	/** Implemented as part of ControlValueAccessor. */
+	registerOnChange(fn: any): void {
+		this.onChange = fn;
+	}
 
-  /** Implemented as part of ControlValueAccessor. */
-  writeValue(value: any): void {
-    this.checked = !!value;
-  }
+	/** Implemented as part of ControlValueAccessor. */
+	registerOnTouched(fn: any): void {
+		this.onTouched = fn;
+	}
 
-  /** Implemented as part of ControlValueAccessor. */
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
+	/** Implemented as a part of ControlValueAccessor. */
+	setDisabledState(isDisabled: boolean): void {
+		this.disabled = isDisabled;
+		this._changeDetectorRef.markForCheck();
+	}
 
-  /** Implemented as part of ControlValueAccessor. */
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
+	/** Focuses the slide-toggle. */
+	focus(): void {
+		this._focusMonitor.focusVia(this._inputElement.nativeElement, 'keyboard');
+	}
 
-  /** Implemented as a part of ControlValueAccessor. */
-  setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
-    this._changeDetectorRef.markForCheck();
-  }
+	/** Toggles the checked state of the slide-toggle. */
+	toggle(): void {
+		this.checked = !this.checked;
+	}
 
-  /** Focuses the slide-toggle. */
-  focus(): void {
-    this._focusMonitor.focusVia(this._inputElement.nativeElement, 'keyboard');
-  }
+	/** Function is called whenever the focus changes for the input element. */
+	private _onInputFocusChange(focusOrigin: FocusOrigin) {
+		if (!this._focusRipple && focusOrigin === 'keyboard') {
+			// For keyboard focus show a persistent ripple as focus indicator.
+			this._focusRipple = this._ripple.launch(0, 0, { persistent: true });
+		} else if (!focusOrigin) {
+			this.onTouched();
 
-  /** Toggles the checked state of the slide-toggle. */
-  toggle(): void {
-    this.checked = !this.checked;
-  }
+			// Fade out and clear the focus ripple if one is currently present.
+			if (this._focusRipple) {
+				this._focusRipple.fadeOut();
+				this._focusRipple = null;
+			}
+		}
+	}
 
-  /** Function is called whenever the focus changes for the input element. */
-  private _onInputFocusChange(focusOrigin: FocusOrigin) {
-    if (!this._focusRipple && focusOrigin === 'keyboard') {
-      // For keyboard focus show a persistent ripple as focus indicator.
-      this._focusRipple = this._ripple.launch(0, 0, {persistent: true});
-    } else if (!focusOrigin) {
-      this.onTouched();
+	/**
+	 * Emits a change event on the `change` output. Also notifies the FormControl about the change.
+	 */
+	private _emitChangeEvent() {
+		this.onChange(this.checked);
+		this.change.emit(new MatSlideToggleChange(this, this.checked));
+	}
 
-      // Fade out and clear the focus ripple if one is currently present.
-      if (this._focusRipple) {
-        this._focusRipple.fadeOut();
-        this._focusRipple = null;
-      }
-    }
-  }
+	_onDragStart() {
+		if (!this.disabled) {
+			this._slideRenderer.startThumbDrag(this.checked);
+		}
+	}
 
-  /**
-   * Emits a change event on the `change` output. Also notifies the FormControl about the change.
-   */
-  private _emitChangeEvent() {
-    this.onChange(this.checked);
-    this.change.emit(new MatSlideToggleChange(this, this.checked));
-  }
+	_onDrag(event: HammerInput) {
+		if (this._slideRenderer.dragging) {
+			this._slideRenderer.updateThumbPosition(event.deltaX);
+		}
+	}
 
-  _onDragStart() {
-    if (!this.disabled) {
-      this._slideRenderer.startThumbDrag(this.checked);
-    }
-  }
+	_onDragEnd() {
+		if (this._slideRenderer.dragging) {
+			const newCheckedValue = this._slideRenderer.dragPercentage > 50;
 
-  _onDrag(event: HammerInput) {
-    if (this._slideRenderer.dragging) {
-      this._slideRenderer.updateThumbPosition(event.deltaX);
-    }
-  }
+			if (newCheckedValue !== this.checked) {
+				this.checked = newCheckedValue;
+				this._emitChangeEvent();
+			}
 
-  _onDragEnd() {
-    if (this._slideRenderer.dragging) {
-      const newCheckedValue = this._slideRenderer.dragPercentage > 50;
+			// The drag should be stopped outside of the current event handler, because otherwise the
+			// click event will be fired before and will revert the drag change.
+			setTimeout(() => this._slideRenderer.stopThumbDrag());
+		}
+	}
 
-      if (newCheckedValue !== this.checked) {
-        this.checked = newCheckedValue;
-        this._emitChangeEvent();
-      }
-
-      // The drag should be stopped outside of the current event handler, because otherwise the
-      // click event will be fired before and will revert the drag change.
-      setTimeout(() => this._slideRenderer.stopThumbDrag());
-    }
-  }
-
-  /** Method being called whenever the label text changes. */
-  _onLabelTextChange() {
-    // This method is getting called whenever the label of the slide-toggle changes.
-    // Since the slide-toggle uses the OnPush strategy we need to notify it about the change
-    // that has been recognized by the cdkObserveContent directive.
-    this._changeDetectorRef.markForCheck();
-  }
+	/** Method being called whenever the label text changes. */
+	_onLabelTextChange() {
+		// This method is getting called whenever the label of the slide-toggle changes.
+		// Since the slide-toggle uses the OnPush strategy we need to notify it about the change
+		// that has been recognized by the cdkObserveContent directive.
+		this._changeDetectorRef.markForCheck();
+	}
 }
 
 /**
  * Renderer for the Slide Toggle component, which separates DOM modification in its own class
  */
 class SlideToggleRenderer {
+	/** Reference to the thumb HTMLElement. */
+	private _thumbEl: HTMLElement;
 
-  /** Reference to the thumb HTMLElement. */
-  private _thumbEl: HTMLElement;
+	/** Reference to the thumb bar HTMLElement. */
+	private _thumbBarEl: HTMLElement;
 
-  /** Reference to the thumb bar HTMLElement. */
-  private _thumbBarEl: HTMLElement;
+	/** Width of the thumb bar of the slide-toggle. */
+	private _thumbBarWidth: number;
 
-  /** Width of the thumb bar of the slide-toggle. */
-  private _thumbBarWidth: number;
+	/** Previous checked state before drag started. */
+	private _previousChecked: boolean;
 
-  /** Previous checked state before drag started. */
-  private _previousChecked: boolean;
+	/** Percentage of the thumb while dragging. Percentage as fraction of 100. */
+	dragPercentage: number;
 
-  /** Percentage of the thumb while dragging. Percentage as fraction of 100. */
-  dragPercentage: number;
+	/** Whether the thumb is currently being dragged. */
+	dragging: boolean = false;
 
-  /** Whether the thumb is currently being dragged. */
-  dragging: boolean = false;
+	constructor(elementRef: ElementRef, platform: Platform) {
+		// We only need to interact with these elements when we're on the browser, so only grab
+		// the reference in that case.
+		if (platform.isBrowser) {
+			this._thumbEl = elementRef.nativeElement.querySelector('.mat-slide-toggle-thumb-container');
+			this._thumbBarEl = elementRef.nativeElement.querySelector('.mat-slide-toggle-bar');
+		}
+	}
 
-  constructor(elementRef: ElementRef, platform: Platform) {
-    // We only need to interact with these elements when we're on the browser, so only grab
-    // the reference in that case.
-    if (platform.isBrowser) {
-      this._thumbEl = elementRef.nativeElement.querySelector('.mat-slide-toggle-thumb-container');
-      this._thumbBarEl = elementRef.nativeElement.querySelector('.mat-slide-toggle-bar');
-    }
-  }
+	/** Initializes the drag of the slide-toggle. */
+	startThumbDrag(checked: boolean): void {
+		if (this.dragging) {
+			return;
+		}
 
-  /** Initializes the drag of the slide-toggle. */
-  startThumbDrag(checked: boolean): void {
-    if (this.dragging) { return; }
+		this._thumbBarWidth = this._thumbBarEl.clientWidth - this._thumbEl.clientWidth;
+		this._thumbEl.classList.add('mat-dragging');
 
-    this._thumbBarWidth = this._thumbBarEl.clientWidth - this._thumbEl.clientWidth;
-    this._thumbEl.classList.add('mat-dragging');
+		this._previousChecked = checked;
+		this.dragging = true;
+	}
 
-    this._previousChecked = checked;
-    this.dragging = true;
-  }
+	/** Resets the current drag and returns the new checked value. */
+	stopThumbDrag(): boolean {
+		if (!this.dragging) {
+			return false;
+		}
 
-  /** Resets the current drag and returns the new checked value. */
-  stopThumbDrag(): boolean {
-    if (!this.dragging) { return false; }
+		this.dragging = false;
+		this._thumbEl.classList.remove('mat-dragging');
 
-    this.dragging = false;
-    this._thumbEl.classList.remove('mat-dragging');
+		// Reset the transform because the component will take care of the thumb position after drag.
+		this._thumbEl.style.transform = '';
 
-    // Reset the transform because the component will take care of the thumb position after drag.
-    this._thumbEl.style.transform = '';
+		return this.dragPercentage > 50;
+	}
 
-    return this.dragPercentage > 50;
-  }
+	/** Updates the thumb containers position from the specified distance. */
+	updateThumbPosition(distance: number): void {
+		this.dragPercentage = this._getDragPercentage(distance);
+		// Calculate the moved distance based on the thumb bar width.
+		const dragX = this.dragPercentage / 100 * this._thumbBarWidth;
+		this._thumbEl.style.transform = `translate3d(${dragX}px, 0, 0)`;
+	}
 
-  /** Updates the thumb containers position from the specified distance. */
-  updateThumbPosition(distance: number): void {
-    this.dragPercentage = this._getDragPercentage(distance);
-    // Calculate the moved distance based on the thumb bar width.
-    const dragX = (this.dragPercentage / 100) * this._thumbBarWidth;
-    this._thumbEl.style.transform = `translate3d(${dragX}px, 0, 0)`;
-  }
+	/** Retrieves the percentage of thumb from the moved distance. Percentage as fraction of 100. */
+	private _getDragPercentage(distance: number) {
+		let percentage = distance / this._thumbBarWidth * 100;
 
-  /** Retrieves the percentage of thumb from the moved distance. Percentage as fraction of 100. */
-  private _getDragPercentage(distance: number) {
-    let percentage = (distance / this._thumbBarWidth) * 100;
+		// When the toggle was initially checked, then we have to start the drag at the end.
+		if (this._previousChecked) {
+			percentage += 100;
+		}
 
-    // When the toggle was initially checked, then we have to start the drag at the end.
-    if (this._previousChecked) {
-      percentage += 100;
-    }
-
-    return Math.max(0, Math.min(percentage, 100));
-  }
-
+		return Math.max(0, Math.min(percentage, 100));
+	}
 }

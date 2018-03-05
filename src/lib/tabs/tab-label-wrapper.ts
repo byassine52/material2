@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef} from '@angular/core';
-import {CanDisable, mixinDisabled} from '@angular/material/core';
+import { Directive, ElementRef } from '@angular/core';
+import { CanDisable, mixinDisabled } from '@angular/material/core';
 
 // Boilerplate for applying mixins to MatTabLabelWrapper.
 /** @docs-private */
@@ -19,27 +19,27 @@ export const _MatTabLabelWrapperMixinBase = mixinDisabled(MatTabLabelWrapperBase
  * @docs-private
  */
 @Directive({
-  selector: '[matTabLabelWrapper]',
-  inputs: ['disabled'],
-  host: {
-    '[class.mat-tab-disabled]': 'disabled'
-  }
+	selector: '[matTabLabelWrapper]',
+	inputs: ['disabled'],
+	host: {
+		'[class.mat-tab-disabled]': 'disabled'
+	}
 })
 export class MatTabLabelWrapper extends _MatTabLabelWrapperMixinBase implements CanDisable {
-  constructor(public elementRef: ElementRef) {
-    super();
-  }
+	constructor(public elementRef: ElementRef) {
+		super();
+	}
 
-  /** Sets focus on the wrapper element */
-  focus(): void {
-    this.elementRef.nativeElement.focus();
-  }
+	/** Sets focus on the wrapper element */
+	focus(): void {
+		this.elementRef.nativeElement.focus();
+	}
 
-  getOffsetLeft(): number {
-    return this.elementRef.nativeElement.offsetLeft;
-  }
+	getOffsetLeft(): number {
+		return this.elementRef.nativeElement.offsetLeft;
+	}
 
-  getOffsetWidth(): number {
-    return this.elementRef.nativeElement.offsetWidth;
-  }
+	getOffsetWidth(): number {
+		return this.elementRef.nativeElement.offsetWidth;
+	}
 }

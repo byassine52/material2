@@ -6,17 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation} from '@angular/core';
-
+import { Component, ViewEncapsulation } from '@angular/core';
 
 @Component({
-  moduleId: module.id,
-  selector: 'drawer-demo',
-  templateUrl: 'drawer-demo.html',
-  styleUrls: ['drawer-demo.css'],
-  encapsulation: ViewEncapsulation.None,
-  preserveWhitespaces: false,
+	moduleId: module.id,
+	selector: 'drawer-demo',
+	templateUrl: 'drawer-demo.html',
+	styleUrls: ['drawer-demo.css'],
+	encapsulation: ViewEncapsulation.None,
+	preserveWhitespaces: false
 })
 export class DrawerDemo {
-  invert = false;
+	invert = false;
 }

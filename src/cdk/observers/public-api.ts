@@ -12,4 +12,4 @@ export * from './observe-content';
  * @deprecated Use CdkObserveContent
  * @deletion-target 6.0.0
  */
-export {CdkObserveContent as ObserveContent} from './observe-content';
+export { CdkObserveContent as ObserveContent } from './observe-content';

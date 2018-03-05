@@ -9,4 +9,3 @@
 export * from './grid-list-module';
 export * from './grid-list';
 export * from './grid-tile';
-

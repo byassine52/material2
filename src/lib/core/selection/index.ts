@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-import {MatPseudoCheckbox} from './pseudo-checkbox/pseudo-checkbox';
-
+import { NgModule } from '@angular/core';
+import { MatPseudoCheckbox } from './pseudo-checkbox/pseudo-checkbox';
 
 @NgModule({
-  exports: [MatPseudoCheckbox],
-  declarations: [MatPseudoCheckbox]
+	exports: [MatPseudoCheckbox],
+	declarations: [MatPseudoCheckbox]
 })
-export class MatPseudoCheckboxModule { }
-
+export class MatPseudoCheckboxModule {}
 
 export * from './pseudo-checkbox/pseudo-checkbox';

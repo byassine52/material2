@@ -6,15 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-
+import { Component } from '@angular/core';
 
 @Component({
-  moduleId: module.id,
-  selector: 'toolbar-demo',
-  templateUrl: 'toolbar-demo.html',
-  styleUrls: ['toolbar-demo.css'],
+	moduleId: module.id,
+	selector: 'toolbar-demo',
+	templateUrl: 'toolbar-demo.html',
+	styleUrls: ['toolbar-demo.css']
 })
-export class ToolbarDemo {
-
-}
+export class ToolbarDemo {}

@@ -1,24 +1,23 @@
-import {browser, by, element} from 'protractor';
-
+import { browser, by, element } from 'protractor';
 
 describe('icon', () => {
-  describe('font icons by ligature', () => {
-    let testIcon: any;
+	describe('font icons by ligature', () => {
+		let testIcon: any;
 
-    beforeEach(() => {
-      browser.get('/icon');
-      testIcon = element(by.id('test-icon'));
-    });
+		beforeEach(() => {
+			browser.get('/icon');
+			testIcon = element(by.id('test-icon'));
+		});
 
-    it('should have the correct class when used', async () => {
-      const attr = await testIcon.getAttribute('class');
+		it('should have the correct class when used', async () => {
+			const attr = await testIcon.getAttribute('class');
 
-      expect(attr).toContain('custom-class');
-      expect(attr).toContain('material-icons');
-    });
+			expect(attr).toContain('custom-class');
+			expect(attr).toContain('material-icons');
+		});
 
-    it('should have the correct role when used', () => {
-      expect(testIcon.getAttribute('role')).toBe('img');
-    });
-  });
+		it('should have the correct role when used', () => {
+			expect(testIcon.getAttribute('role')).toBe('img');
+		});
+	});
 });

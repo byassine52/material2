@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-
+import { Component } from '@angular/core';
 
 @Component({
-  moduleId: module.id,
-  selector: 'typography-demo',
-  templateUrl: 'typography-demo.html',
-  styleUrls: ['typography-demo.css'],
+	moduleId: module.id,
+	selector: 'typography-demo',
+	templateUrl: 'typography-demo.html',
+	styleUrls: ['typography-demo.css']
 })
-export class TypographyDemo { }
+export class TypographyDemo {}

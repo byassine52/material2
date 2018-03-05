@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive} from '@angular/core';
-
+import { Directive } from '@angular/core';
 
 /** The floating label for a `mat-form-field`. */
 @Directive({
-  selector: 'mat-label'
+	selector: 'mat-label'
 })
 export class MatLabel {}

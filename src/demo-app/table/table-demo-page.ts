@@ -6,15 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
-  moduleId: module.id,
-  templateUrl: 'table-demo-page.html',
+	moduleId: module.id,
+	templateUrl: 'table-demo-page.html'
 })
 export class TableDemoPage {
-  links = [
-    {name: 'Main Page', link: 'main-demo'},
-    {name: 'Custom Table', link: 'custom-table'},
-  ];
+	links = [{ name: 'Main Page', link: 'main-demo' }, { name: 'Custom Table', link: 'custom-table' }];
 }

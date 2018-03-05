@@ -14,11 +14,13 @@ const ID_DELIMINATOR = ' ';
  * Used for attributes such as aria-labelledby, aria-owns, etc.
  */
 export function addAriaReferencedId(el: Element, attr: string, id: string) {
-  const ids = getAriaReferenceIds(el, attr);
-  if (ids.some(existingId => existingId.trim() == id.trim())) { return; }
-  ids.push(id.trim());
+	const ids = getAriaReferenceIds(el, attr);
+	if (ids.some(existingId => existingId.trim() == id.trim())) {
+		return;
+	}
+	ids.push(id.trim());
 
-  el.setAttribute(attr, ids.join(ID_DELIMINATOR));
+	el.setAttribute(attr, ids.join(ID_DELIMINATOR));
 }
 
 /**
@@ -26,10 +28,10 @@ export function addAriaReferencedId(el: Element, attr: string, id: string) {
  * Used for attributes such as aria-labelledby, aria-owns, etc.
  */
 export function removeAriaReferencedId(el: Element, attr: string, id: string) {
-  const ids = getAriaReferenceIds(el, attr);
-  const filteredIds = ids.filter(val => val != id.trim());
+	const ids = getAriaReferenceIds(el, attr);
+	const filteredIds = ids.filter(val => val != id.trim());
 
-  el.setAttribute(attr, filteredIds.join(ID_DELIMINATOR));
+	el.setAttribute(attr, filteredIds.join(ID_DELIMINATOR));
 }
 
 /**
@@ -37,6 +39,6 @@ export function removeAriaReferencedId(el: Element, attr: string, id: string) {
  * Used for attributes such as aria-labelledby, aria-owns, etc.
  */
 export function getAriaReferenceIds(el: Element, attr: string): string[] {
-  // Get string array of all individual ids (whitespace deliminated) in the attribute value
-  return (el.getAttribute(attr) || '').match(/\S+/g) || [];
+	// Get string array of all individual ids (whitespace deliminated) in the attribute value
+	return (el.getAttribute(attr) || '').match(/\S+/g) || [];
 }

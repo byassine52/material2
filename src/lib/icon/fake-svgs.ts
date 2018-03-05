@@ -12,9 +12,9 @@
  * @docs-private
  */
 export const FAKE_SVGS = {
-  cat: '<svg><path id="meow" name="meow"></path></svg>',
-  dog: '<svg><path id="woof" name="woof"></path></svg>',
-  farmSet1: `
+	cat: '<svg><path id="meow" name="meow"></path></svg>',
+	dog: '<svg><path id="woof" name="woof"></path></svg>',
+	farmSet1: `
     <svg>
       <defs>
         <g id="pig" name="pig"><path name="oink"></path></g>
@@ -22,7 +22,7 @@ export const FAKE_SVGS = {
       </defs>
     </svg>
   `,
-  farmSet2: `
+	farmSet2: `
     <svg>
       <defs>
         <g id="cow" name="cow"><path name="moo moo"></path></g>
@@ -30,14 +30,14 @@ export const FAKE_SVGS = {
       </defs>
     </svg>
   `,
-  farmSet3: `
+	farmSet3: `
     <svg>
       <symbol id="duck" name="duck">
         <path id="quack" name="quack"></path>
       </symbol>
     </svg>
   `,
-  arrows: `
+	arrows: `
     <svg>
       <defs>
         <svg id="left-arrow" name="left-arrow"><path name="left"></path></svg>

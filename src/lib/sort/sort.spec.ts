@@ -1,212 +1,209 @@
-import {CollectionViewer, DataSource} from '@angular/cdk/collections';
-import {CdkTableModule} from '@angular/cdk/table';
-import {dispatchMouseEvent, wrappedErrorMessage} from '@angular/cdk/testing';
-import {Component, ElementRef, ViewChild} from '@angular/core';
-import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Observable} from 'rxjs/Observable';
-import {map} from 'rxjs/operators/map';
-import {MatTableModule} from '../table/index';
+import { CollectionViewer, DataSource } from '@angular/cdk/collections';
+import { CdkTableModule } from '@angular/cdk/table';
+import { dispatchMouseEvent, wrappedErrorMessage } from '@angular/cdk/testing';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators/map';
+import { MatTableModule } from '../table/index';
+import { MatSort, MatSortHeader, MatSortHeaderIntl, MatSortModule, Sort, SortDirection } from './index';
 import {
-  MatSort,
-  MatSortHeader,
-  MatSortHeaderIntl,
-  MatSortModule,
-  Sort,
-  SortDirection
-} from './index';
-import {
-  getSortDuplicateSortableIdError,
-  getSortHeaderMissingIdError,
-  getSortHeaderNotContainedWithinSortError,
-  getSortInvalidDirectionError,
+	getSortDuplicateSortableIdError,
+	getSortHeaderMissingIdError,
+	getSortHeaderNotContainedWithinSortError,
+	getSortInvalidDirectionError
 } from './sort-errors';
 
-
 describe('MatSort', () => {
-  let fixture: ComponentFixture<SimpleMatSortApp>;
+	let fixture: ComponentFixture<SimpleMatSortApp>;
 
-  let component: SimpleMatSortApp;
+	let component: SimpleMatSortApp;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
-      declarations: [
-        SimpleMatSortApp,
-        CdkTableMatSortApp,
-        MatTableMatSortApp,
-        MatSortHeaderMissingMatSortApp,
-        MatSortDuplicateMatSortableIdsApp,
-        MatSortableMissingIdApp,
-        MatSortableInvalidDirection
-      ],
-    }).compileComponents();
-  }));
+	beforeEach(
+		async(() => {
+			TestBed.configureTestingModule({
+				imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
+				declarations: [
+					SimpleMatSortApp,
+					CdkTableMatSortApp,
+					MatTableMatSortApp,
+					MatSortHeaderMissingMatSortApp,
+					MatSortDuplicateMatSortableIdsApp,
+					MatSortableMissingIdApp,
+					MatSortableInvalidDirection
+				]
+			}).compileComponents();
+		})
+	);
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SimpleMatSortApp);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+	beforeEach(() => {
+		fixture = TestBed.createComponent(SimpleMatSortApp);
+		component = fixture.componentInstance;
+		fixture.detectChanges();
+	});
 
-  it('should have the sort headers register and deregister themselves', () => {
-    const sortables = component.matSort.sortables;
-    expect(sortables.size).toBe(4);
-    expect(sortables.get('defaultSortHeaderA')).toBe(component.matSortHeaderDefaultA);
-    expect(sortables.get('defaultSortHeaderB')).toBe(component.matSortHeaderDefaultB);
+	it('should have the sort headers register and deregister themselves', () => {
+		const sortables = component.matSort.sortables;
+		expect(sortables.size).toBe(4);
+		expect(sortables.get('defaultSortHeaderA')).toBe(component.matSortHeaderDefaultA);
+		expect(sortables.get('defaultSortHeaderB')).toBe(component.matSortHeaderDefaultB);
 
-    fixture.destroy();
-    expect(sortables.size).toBe(0);
-  });
+		fixture.destroy();
+		expect(sortables.size).toBe(0);
+	});
 
-  it('should use the column definition if used within a cdk table', () => {
-    let cdkTableMatSortAppFixture = TestBed.createComponent(CdkTableMatSortApp);
-    let cdkTableMatSortAppComponent = cdkTableMatSortAppFixture.componentInstance;
+	it('should use the column definition if used within a cdk table', () => {
+		let cdkTableMatSortAppFixture = TestBed.createComponent(CdkTableMatSortApp);
+		let cdkTableMatSortAppComponent = cdkTableMatSortAppFixture.componentInstance;
 
-    cdkTableMatSortAppFixture.detectChanges();
-    cdkTableMatSortAppFixture.detectChanges();
+		cdkTableMatSortAppFixture.detectChanges();
+		cdkTableMatSortAppFixture.detectChanges();
 
-    const sortables = cdkTableMatSortAppComponent.matSort.sortables;
-    expect(sortables.size).toBe(3);
-    expect(sortables.has('column_a')).toBe(true);
-    expect(sortables.has('column_b')).toBe(true);
-    expect(sortables.has('column_c')).toBe(true);
-  });
+		const sortables = cdkTableMatSortAppComponent.matSort.sortables;
+		expect(sortables.size).toBe(3);
+		expect(sortables.has('column_a')).toBe(true);
+		expect(sortables.has('column_b')).toBe(true);
+		expect(sortables.has('column_c')).toBe(true);
+	});
 
-  it('should use the column definition if used within an mat table', () => {
-    let matTableMatSortAppFixture = TestBed.createComponent(MatTableMatSortApp);
-    let matTableMatSortAppComponent = matTableMatSortAppFixture.componentInstance;
+	it('should use the column definition if used within an mat table', () => {
+		let matTableMatSortAppFixture = TestBed.createComponent(MatTableMatSortApp);
+		let matTableMatSortAppComponent = matTableMatSortAppFixture.componentInstance;
 
-    matTableMatSortAppFixture.detectChanges();
-    matTableMatSortAppFixture.detectChanges();
+		matTableMatSortAppFixture.detectChanges();
+		matTableMatSortAppFixture.detectChanges();
 
-    const sortables = matTableMatSortAppComponent.matSort.sortables;
-    expect(sortables.size).toBe(3);
-    expect(sortables.has('column_a')).toBe(true);
-    expect(sortables.has('column_b')).toBe(true);
-    expect(sortables.has('column_c')).toBe(true);
-  });
+		const sortables = matTableMatSortAppComponent.matSort.sortables;
+		expect(sortables.size).toBe(3);
+		expect(sortables.has('column_a')).toBe(true);
+		expect(sortables.has('column_b')).toBe(true);
+		expect(sortables.has('column_c')).toBe(true);
+	});
 
-  it('should be able to cycle from asc -> desc from either start point', () => {
-    component.disableClear = true;
+	it('should be able to cycle from asc -> desc from either start point', () => {
+		component.disableClear = true;
 
-    component.start = 'asc';
-    testSingleColumnSortDirectionSequence(fixture, ['asc', 'desc']);
+		component.start = 'asc';
+		testSingleColumnSortDirectionSequence(fixture, ['asc', 'desc']);
 
-    // Reverse directions
-    component.start = 'desc';
-    testSingleColumnSortDirectionSequence(fixture, ['desc', 'asc']);
-  });
+		// Reverse directions
+		component.start = 'desc';
+		testSingleColumnSortDirectionSequence(fixture, ['desc', 'asc']);
+	});
 
-  it('should be able to cycle asc -> desc -> [none]', () => {
-    component.start = 'asc';
-    testSingleColumnSortDirectionSequence(fixture, ['asc', 'desc', '']);
-  });
+	it('should be able to cycle asc -> desc -> [none]', () => {
+		component.start = 'asc';
+		testSingleColumnSortDirectionSequence(fixture, ['asc', 'desc', '']);
+	});
 
-  it('should be able to cycle desc -> asc -> [none]', () => {
-    component.start = 'desc';
-    testSingleColumnSortDirectionSequence(fixture, ['desc', 'asc', '']);
-  });
+	it('should be able to cycle desc -> asc -> [none]', () => {
+		component.start = 'desc';
+		testSingleColumnSortDirectionSequence(fixture, ['desc', 'asc', '']);
+	});
 
-  it('should allow for the cycling the sort direction to be disabled per column', () => {
-    const button = fixture.nativeElement.querySelector('#defaultSortHeaderA button');
+	it('should allow for the cycling the sort direction to be disabled per column', () => {
+		const button = fixture.nativeElement.querySelector('#defaultSortHeaderA button');
 
-    component.sort('defaultSortHeaderA');
-    expect(component.matSort.direction).toBe('asc');
-    expect(button.getAttribute('disabled')).toBeFalsy();
+		component.sort('defaultSortHeaderA');
+		expect(component.matSort.direction).toBe('asc');
+		expect(button.getAttribute('disabled')).toBeFalsy();
 
-    component.disabledColumnSort = true;
-    fixture.detectChanges();
+		component.disabledColumnSort = true;
+		fixture.detectChanges();
 
-    component.sort('defaultSortHeaderA');
-    expect(component.matSort.direction).toBe('asc');
-    expect(button.getAttribute('disabled')).toBe('true');
-  });
+		component.sort('defaultSortHeaderA');
+		expect(component.matSort.direction).toBe('asc');
+		expect(button.getAttribute('disabled')).toBe('true');
+	});
 
-  it('should allow for the cycling the sort direction to be disabled for all columns', () => {
-    const button = fixture.nativeElement.querySelector('#defaultSortHeaderA button');
+	it('should allow for the cycling the sort direction to be disabled for all columns', () => {
+		const button = fixture.nativeElement.querySelector('#defaultSortHeaderA button');
 
-    component.sort('defaultSortHeaderA');
-    expect(component.matSort.active).toBe('defaultSortHeaderA');
-    expect(component.matSort.direction).toBe('asc');
-    expect(button.getAttribute('disabled')).toBeFalsy();
+		component.sort('defaultSortHeaderA');
+		expect(component.matSort.active).toBe('defaultSortHeaderA');
+		expect(component.matSort.direction).toBe('asc');
+		expect(button.getAttribute('disabled')).toBeFalsy();
 
-    component.disableAllSort = true;
-    fixture.detectChanges();
+		component.disableAllSort = true;
+		fixture.detectChanges();
 
-    component.sort('defaultSortHeaderA');
-    expect(component.matSort.active).toBe('defaultSortHeaderA');
-    expect(component.matSort.direction).toBe('asc');
-    expect(button.getAttribute('disabled')).toBe('true');
+		component.sort('defaultSortHeaderA');
+		expect(component.matSort.active).toBe('defaultSortHeaderA');
+		expect(component.matSort.direction).toBe('asc');
+		expect(button.getAttribute('disabled')).toBe('true');
 
-    component.sort('defaultSortHeaderB');
-    expect(component.matSort.active).toBe('defaultSortHeaderA');
-    expect(component.matSort.direction).toBe('asc');
-    expect(button.getAttribute('disabled')).toBe('true');
-  });
+		component.sort('defaultSortHeaderB');
+		expect(component.matSort.active).toBe('defaultSortHeaderA');
+		expect(component.matSort.direction).toBe('asc');
+		expect(button.getAttribute('disabled')).toBe('true');
+	});
 
-  it('should reset sort direction when a different column is sorted', () => {
-    component.sort('defaultSortHeaderA');
-    expect(component.matSort.active).toBe('defaultSortHeaderA');
-    expect(component.matSort.direction).toBe('asc');
+	it('should reset sort direction when a different column is sorted', () => {
+		component.sort('defaultSortHeaderA');
+		expect(component.matSort.active).toBe('defaultSortHeaderA');
+		expect(component.matSort.direction).toBe('asc');
 
-    component.sort('defaultSortHeaderA');
-    expect(component.matSort.active).toBe('defaultSortHeaderA');
-    expect(component.matSort.direction).toBe('desc');
+		component.sort('defaultSortHeaderA');
+		expect(component.matSort.active).toBe('defaultSortHeaderA');
+		expect(component.matSort.direction).toBe('desc');
 
-    component.sort('defaultSortHeaderB');
-    expect(component.matSort.active).toBe('defaultSortHeaderB');
-    expect(component.matSort.direction).toBe('asc');
-  });
+		component.sort('defaultSortHeaderB');
+		expect(component.matSort.active).toBe('defaultSortHeaderB');
+		expect(component.matSort.direction).toBe('asc');
+	});
 
-  it('should throw an error if an MatSortable is not contained within an MatSort directive', () => {
-    expect(() => TestBed.createComponent(MatSortHeaderMissingMatSortApp).detectChanges())
-        .toThrowError(wrappedErrorMessage(getSortHeaderNotContainedWithinSortError()));
-  });
+	it('should throw an error if an MatSortable is not contained within an MatSort directive', () => {
+		expect(() => TestBed.createComponent(MatSortHeaderMissingMatSortApp).detectChanges()).toThrowError(
+			wrappedErrorMessage(getSortHeaderNotContainedWithinSortError())
+		);
+	});
 
-  it('should throw an error if two MatSortables have the same id', () => {
-    expect(() => TestBed.createComponent(MatSortDuplicateMatSortableIdsApp).detectChanges())
-        .toThrowError(wrappedErrorMessage(getSortDuplicateSortableIdError('duplicateId')));
-  });
+	it('should throw an error if two MatSortables have the same id', () => {
+		expect(() => TestBed.createComponent(MatSortDuplicateMatSortableIdsApp).detectChanges()).toThrowError(
+			wrappedErrorMessage(getSortDuplicateSortableIdError('duplicateId'))
+		);
+	});
 
-  it('should throw an error if an MatSortable is missing an id', () => {
-    expect(() => TestBed.createComponent(MatSortableMissingIdApp).detectChanges())
-        .toThrowError(wrappedErrorMessage(getSortHeaderMissingIdError()));
-  });
+	it('should throw an error if an MatSortable is missing an id', () => {
+		expect(() => TestBed.createComponent(MatSortableMissingIdApp).detectChanges()).toThrowError(
+			wrappedErrorMessage(getSortHeaderMissingIdError())
+		);
+	});
 
-  it('should throw an error if the provided direction is invalid', () => {
-    expect(() => TestBed.createComponent(MatSortableInvalidDirection).detectChanges())
-        .toThrowError(wrappedErrorMessage(getSortInvalidDirectionError('ascending')));
-  });
+	it('should throw an error if the provided direction is invalid', () => {
+		expect(() => TestBed.createComponent(MatSortableInvalidDirection).detectChanges()).toThrowError(
+			wrappedErrorMessage(getSortInvalidDirectionError('ascending'))
+		);
+	});
 
-  it('should allow let MatSortable override the default sort parameters', () => {
-    testSingleColumnSortDirectionSequence(
-        fixture, ['asc', 'desc', '']);
+	it('should allow let MatSortable override the default sort parameters', () => {
+		testSingleColumnSortDirectionSequence(fixture, ['asc', 'desc', '']);
 
-    testSingleColumnSortDirectionSequence(
-        fixture, ['desc', 'asc', ''], 'overrideStart');
+		testSingleColumnSortDirectionSequence(fixture, ['desc', 'asc', ''], 'overrideStart');
 
-    testSingleColumnSortDirectionSequence(
-        fixture, ['asc', 'desc'], 'overrideDisableClear');
-  });
+		testSingleColumnSortDirectionSequence(fixture, ['asc', 'desc'], 'overrideDisableClear');
+	});
 
-  it('should apply the aria-labels to the button', () => {
-    const button = fixture.nativeElement.querySelector('#defaultSortHeaderA button');
-    expect(button.getAttribute('aria-label')).toBe('Change sorting for defaultSortHeaderA');
-  });
+	it('should apply the aria-labels to the button', () => {
+		const button = fixture.nativeElement.querySelector('#defaultSortHeaderA button');
+		expect(button.getAttribute('aria-label')).toBe('Change sorting for defaultSortHeaderA');
+	});
 
-  it('should re-render when the i18n labels have changed',
-    inject([MatSortHeaderIntl], (intl: MatSortHeaderIntl) => {
-      const header = fixture.debugElement.query(By.directive(MatSortHeader)).nativeElement;
-      const button = header.querySelector('.mat-sort-header-button');
+	it(
+		'should re-render when the i18n labels have changed',
+		inject([MatSortHeaderIntl], (intl: MatSortHeaderIntl) => {
+			const header = fixture.debugElement.query(By.directive(MatSortHeader)).nativeElement;
+			const button = header.querySelector('.mat-sort-header-button');
 
-      intl.sortButtonLabel = () => 'Sort all of the things';
-      intl.changes.next();
-      fixture.detectChanges();
+			intl.sortButtonLabel = () => 'Sort all of the things';
+			intl.changes.next();
+			fixture.detectChanges();
 
-      expect(button.getAttribute('aria-label')).toBe('Sort all of the things');
-    }));
+			expect(button.getAttribute('aria-label')).toBe('Sort all of the things');
+		})
+	);
 });
 
 /**
@@ -214,38 +211,40 @@ describe('MatSort', () => {
  * consistent with expectations. Detects any changes in the fixture to reflect any changes in
  * the inputs and resets the MatSort to remove any side effects from previous tests.
  */
-function testSingleColumnSortDirectionSequence(fixture: ComponentFixture<SimpleMatSortApp>,
-                                               expectedSequence: SortDirection[],
-                                               id: string = 'defaultSortHeaderA') {
-  // Detect any changes that were made in preparation for this sort sequence
-  fixture.detectChanges();
+function testSingleColumnSortDirectionSequence(
+	fixture: ComponentFixture<SimpleMatSortApp>,
+	expectedSequence: SortDirection[],
+	id: string = 'defaultSortHeaderA'
+) {
+	// Detect any changes that were made in preparation for this sort sequence
+	fixture.detectChanges();
 
-  // Reset the sort to make sure there are no side affects from previous tests
-  const component = fixture.componentInstance;
-  component.matSort.active = '';
-  component.matSort.direction = '';
+	// Reset the sort to make sure there are no side affects from previous tests
+	const component = fixture.componentInstance;
+	component.matSort.active = '';
+	component.matSort.direction = '';
 
-  // Run through the sequence to confirm the order
-  let actualSequence = expectedSequence.map(() => {
-    component.sort(id);
+	// Run through the sequence to confirm the order
+	let actualSequence = expectedSequence.map(() => {
+		component.sort(id);
 
-    // Check that the sort event's active sort is consistent with the MatSort
-    expect(component.matSort.active).toBe(id);
-    expect(component.latestSortEvent.active).toBe(id);
+		// Check that the sort event's active sort is consistent with the MatSort
+		expect(component.matSort.active).toBe(id);
+		expect(component.latestSortEvent.active).toBe(id);
 
-    // Check that the sort event's direction is consistent with the MatSort
-    expect(component.matSort.direction).toBe(component.latestSortEvent.direction);
-    return component.matSort.direction;
-  });
-  expect(actualSequence).toEqual(expectedSequence);
+		// Check that the sort event's direction is consistent with the MatSort
+		expect(component.matSort.direction).toBe(component.latestSortEvent.direction);
+		return component.matSort.direction;
+	});
+	expect(actualSequence).toEqual(expectedSequence);
 
-  // Expect that performing one more sort will loop it back to the beginning.
-  component.sort(id);
-  expect(component.matSort.direction).toBe(expectedSequence[0]);
+	// Expect that performing one more sort will loop it back to the beginning.
+	component.sort(id);
+	expect(component.matSort.direction).toBe(expectedSequence[0]);
 }
 
 @Component({
-  template: `
+	template: `
     <div matSort
          [matSortActive]="active"
          [matSortDisabled]="disableAllSort"
@@ -269,37 +268,36 @@ function testSingleColumnSortDirectionSequence(fixture: ComponentFixture<SimpleM
   `
 })
 class SimpleMatSortApp {
-  latestSortEvent: Sort;
+	latestSortEvent: Sort;
 
-  active: string;
-  start: SortDirection = 'asc';
-  direction: SortDirection = '';
-  disableClear: boolean;
-  disabledColumnSort = false;
-  disableAllSort = false;
+	active: string;
+	start: SortDirection = 'asc';
+	direction: SortDirection = '';
+	disableClear: boolean;
+	disabledColumnSort = false;
+	disableAllSort = false;
 
-  @ViewChild(MatSort) matSort: MatSort;
-  @ViewChild('defaultSortHeaderA') matSortHeaderDefaultA: MatSortHeader;
-  @ViewChild('defaultSortHeaderB') matSortHeaderDefaultB: MatSortHeader;
+	@ViewChild(MatSort) matSort: MatSort;
+	@ViewChild('defaultSortHeaderA') matSortHeaderDefaultA: MatSortHeader;
+	@ViewChild('defaultSortHeaderB') matSortHeaderDefaultB: MatSortHeader;
 
-  constructor (public elementRef: ElementRef) { }
+	constructor(public elementRef: ElementRef) {}
 
-  sort(id: string) {
-    const sortElement = this.elementRef.nativeElement.querySelector(`#${id}`);
-    dispatchMouseEvent(sortElement, 'click');
-  }
+	sort(id: string) {
+		const sortElement = this.elementRef.nativeElement.querySelector(`#${id}`);
+		dispatchMouseEvent(sortElement, 'click');
+	}
 }
 
-
 class FakeDataSource extends DataSource<any> {
-  connect(collectionViewer: CollectionViewer): Observable<any[]> {
-    return collectionViewer.viewChange.pipe(map(() => []));
-  }
-  disconnect() {}
+	connect(collectionViewer: CollectionViewer): Observable<any[]> {
+		return collectionViewer.viewChange.pipe(map(() => []));
+	}
+	disconnect() {}
 }
 
 @Component({
-  template: `
+	template: `
     <cdk-table [dataSource]="dataSource" matSort>
       <ng-container cdkColumnDef="column_a">
         <cdk-header-cell *cdkHeaderCellDef #sortHeaderA mat-sort-header> Column A </cdk-header-cell>
@@ -322,14 +320,14 @@ class FakeDataSource extends DataSource<any> {
   `
 })
 class CdkTableMatSortApp {
-  @ViewChild(MatSort) matSort: MatSort;
+	@ViewChild(MatSort) matSort: MatSort;
 
-  dataSource = new FakeDataSource();
-  columnsToRender = ['column_a', 'column_b', 'column_c'];
+	dataSource = new FakeDataSource();
+	columnsToRender = ['column_a', 'column_b', 'column_c'];
 }
 
 @Component({
-  template: `
+	template: `
     <mat-table [dataSource]="dataSource" matSort>
       <ng-container matColumnDef="column_a">
         <mat-header-cell *matHeaderCellDef #sortHeaderA mat-sort-header> Column A </mat-header-cell>
@@ -352,45 +350,41 @@ class CdkTableMatSortApp {
   `
 })
 class MatTableMatSortApp {
-  @ViewChild(MatSort) matSort: MatSort;
+	@ViewChild(MatSort) matSort: MatSort;
 
-  dataSource = new FakeDataSource();
-  columnsToRender = ['column_a', 'column_b', 'column_c'];
+	dataSource = new FakeDataSource();
+	columnsToRender = ['column_a', 'column_b', 'column_c'];
 }
 
-
 @Component({
-  template: `<div mat-sort-header="a"> A </div>`
+	template: `<div mat-sort-header="a"> A </div>`
 })
-class MatSortHeaderMissingMatSortApp { }
-
+class MatSortHeaderMissingMatSortApp {}
 
 @Component({
-  template: `
+	template: `
     <div matSort>
       <div mat-sort-header="duplicateId"> A </div>
       <div mat-sort-header="duplicateId"> A </div>
     </div>
   `
 })
-class MatSortDuplicateMatSortableIdsApp { }
-
+class MatSortDuplicateMatSortableIdsApp {}
 
 @Component({
-  template: `
+	template: `
     <div matSort>
       <div mat-sort-header> A </div>
     </div>
   `
 })
-class MatSortableMissingIdApp { }
-
+class MatSortableMissingIdApp {}
 
 @Component({
-  template: `
+	template: `
     <div matSort matSortDirection="ascending">
       <div mat-sort-header="a"> A </div>
     </div>
   `
 })
-class MatSortableInvalidDirection { }
+class MatSortableInvalidDirection {}

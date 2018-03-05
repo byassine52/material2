@@ -1,1 +1,1 @@
-export {payloadGithubStatus} from './payload-github-status';
+export { payloadGithubStatus } from './payload-github-status';

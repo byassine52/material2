@@ -6,17 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
-import {Platform, getSupportedInputTypes} from '@angular/cdk/platform';
-
+import { Component } from '@angular/core';
+import { Platform, getSupportedInputTypes } from '@angular/cdk/platform';
 
 @Component({
-  moduleId: module.id,
-  selector: 'platform-demo',
-  templateUrl: 'platform-demo.html',
+	moduleId: module.id,
+	selector: 'platform-demo',
+	templateUrl: 'platform-demo.html'
 })
 export class PlatformDemo {
-  supportedInputTypes = getSupportedInputTypes();
+	supportedInputTypes = getSupportedInputTypes();
 
-  constructor(public platform: Platform) {}
+	constructor(public platform: Platform) {}
 }

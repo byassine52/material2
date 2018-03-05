@@ -1,9 +1,9 @@
 export interface NgxChartResult {
-  name: string;
-  series: NgxChartItem[];
+	name: string;
+	series: NgxChartItem[];
 }
 
 export interface NgxChartItem {
-  name: Date;
-  value: number|string;
+	name: Date;
+	value: number | string;
 }

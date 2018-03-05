@@ -12,4 +12,4 @@ export * from './row';
 export * from './table-module';
 
 /** Re-export DataSource for a more intuitive experience for users of just the table. */
-export {DataSource} from '@angular/cdk/collections';
+export { DataSource } from '@angular/cdk/collections';

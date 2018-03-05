@@ -14,5 +14,5 @@
  * the left mouse button), faked mousedowns will usually set the property value to 0.
  */
 export function isFakeMousedownFromScreenReader(event: MouseEvent): boolean {
-  return event.buttons === 0;
+	return event.buttons === 0;
 }

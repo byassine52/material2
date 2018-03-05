@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
-  moduleId: module.id,
-  selector: 'progress-spinner-a11y',
-  templateUrl: 'progress-spinner-a11y.html'
+	moduleId: module.id,
+	selector: 'progress-spinner-a11y',
+	templateUrl: 'progress-spinner-a11y.html'
 })
 export class ProgressSpinnerAccessibilityDemo {
-  portionValue: number = 60;
+	portionValue: number = 60;
 }
